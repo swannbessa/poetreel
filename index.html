@@ -30,7 +30,7 @@
     --serif:'Inter', system-ui, sans-serif; --sans:'Inter', system-ui, sans-serif;
     --top:env(safe-area-inset-top,0px); --bottom:env(safe-area-inset-bottom,0px);
     --verse:min(17px,4.3vw);           /* même taille pour TOUS les poèmes */
-    --pad:22px;
+    --pad:22px; --tabh:calc(50px + var(--bottom));
   }
   @media (prefers-color-scheme:dark){:root{--bg:#000;--ink:#ededed;--muted:rgba(237,237,237,.45);--line:rgba(237,237,237,.14);--soft:rgba(237,237,237,.05);--on-ink:#000}}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -65,13 +65,13 @@
   .cta:disabled{opacity:.25;cursor:default}
 
   /* ---------- Feed : vertical = poème suivant, horizontal = suite du poème ---------- */
-  #feed{position:fixed;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+  #feed{position:fixed;top:0;left:0;right:0;bottom:var(--tabh);overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
   #feed::-webkit-scrollbar,.track::-webkit-scrollbar{display:none}
-  .reel{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
+  .reel{position:relative;height:calc(100vh - var(--tabh));height:calc(100dvh - var(--tabh));scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
   .ptitle{font-weight:700;font-size:22px;letter-spacing:-.4px;line-height:1.2;margin-bottom:18px}
   .track{height:100%;display:flex;overflow-x:scroll;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
   .page{flex:0 0 100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always;
-    padding:calc(72px + var(--top)) var(--pad) calc(80px + var(--bottom))}
+    padding:calc(64px + var(--top)) var(--pad) 64px}
   .page-inner{max-width:560px;height:100%;margin:0 auto;display:flex;flex-direction:column;justify-content:center}
   .stanza{font-size:var(--verse);line-height:1.6;letter-spacing:-.1px}
   .stanza + .stanza{margin-top:1em}
@@ -81,17 +81,83 @@
   .dots i{width:5px;height:5px;border-radius:99px;background:var(--line);transition:background .2s}
   .dots i.on{background:var(--ink)}
 
-  .foot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 var(--pad) calc(20px + var(--bottom))}
-  .foot-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:6px;height:44px}
+  .foot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 calc(var(--pad) - 8px) 10px var(--pad)}
+  .foot-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:2px;height:44px}
   .poet-name{flex:1;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .act{width:40px;height:40px;display:grid;place-items:center;position:relative}
   .act svg{width:24px;height:24px}
-  .act.liked svg path{fill:currentColor}
+  .act.liked svg path,.act.saved svg path{fill:currentColor}
   .act:active svg{transform:scale(.85)}
   .act .n{position:absolute;top:2px;right:0;font-size:10px;color:var(--muted)}
 
-  .me{position:fixed;top:calc(22px + var(--top));right:var(--pad);z-index:5;width:28px;height:28px;border-radius:99px;
-    background:var(--ink);color:var(--on-ink);font-size:12px;font-weight:600;display:grid;place-items:center}
+  .info{position:absolute;top:calc(16px + var(--top));right:calc(var(--pad) - 8px);z-index:3;width:40px;height:40px;display:grid;place-items:center}
+  .info svg{width:22px;height:22px}
+
+  /* ---------- Barre d'onglets ---------- */
+  .tabbar{position:fixed;left:0;right:0;bottom:0;height:var(--tabh);padding-bottom:var(--bottom);z-index:15;background:var(--bg);border-top:1px solid var(--line);display:flex}
+  .tabbar button{flex:1;display:grid;place-items:center;height:50px;color:var(--ink)}
+  .tabbar svg{width:25px;height:25px}
+  .tabbar button.on svg .fillable{fill:currentColor}
+  .tabbar .av{width:26px;height:26px;border-radius:99px;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:600}
+  .tabbar button.on .av{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
+  .badge{position:absolute;margin:-14px 0 0 18px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--ink);color:var(--on-ink);font-size:10px;font-weight:600;display:grid;place-items:center}
+
+  /* ---------- Vues (recherche, enregistrés, messages, profil) ---------- */
+  .view{position:fixed;top:0;left:0;right:0;bottom:var(--tabh);overflow-y:auto;background:var(--bg);padding:calc(14px + var(--top)) 0 30px}
+  .vh{display:flex;align-items:center;gap:8px;padding:6px var(--pad) 14px;max-width:600px;margin:0 auto}
+  .vh h1{flex:1;font-size:22px;font-weight:700;letter-spacing:-.4px}
+  .vh .ib{width:36px;height:36px;display:grid;place-items:center;margin-left:-8px}
+  .vbody{max-width:600px;margin:0 auto;padding:0 var(--pad)}
+  .search{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:12px;padding:0 12px;margin-bottom:14px}
+  .search input{flex:1;background:none;border:0;outline:0;color:var(--ink);font:16px var(--sans);padding:11px 0}
+  .search svg{width:18px;height:18px;color:var(--muted)}
+  .sec-t{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 6px}
+  .item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 0;text-align:left;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:0}
+  .item .av{width:44px;height:44px;flex:none;border-radius:99px;background:var(--soft);display:grid;place-items:center;font-weight:600;font-size:15px}
+  .item .tx{flex:1;min-width:0}
+  .item b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item small{display:block;color:var(--muted);font-size:13px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .chev{color:var(--muted)}
+  .follow{padding:7px 14px;border-radius:8px;background:var(--ink);color:var(--on-ink);font-size:13px;font-weight:600;flex:none}
+  .follow.on{background:var(--soft);color:var(--ink)}
+  .empty-v{text-align:center;color:var(--muted);padding:70px 30px;font-size:14px;line-height:1.6}
+  .empty-v svg{width:44px;height:44px;margin-bottom:12px;color:var(--ink)}
+  .empty-v b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+  .ph{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 0 18px}
+  .ph .big{width:84px;height:84px;border-radius:99px;background:var(--ink);color:var(--on-ink);display:grid;place-items:center;font-size:32px;font-weight:600}
+  .ph h2{font-size:18px;font-weight:700;margin-top:12px}
+  .stats{display:flex;justify-content:center;gap:34px;margin:16px 0 18px}
+  .stats div{text-align:center}.stats b{display:block;font-size:17px;font-weight:700}.stats span{font-size:12px;color:var(--muted)}
+  .btnrow{display:flex;gap:8px}
+  .btn2{flex:1;padding:10px;border-radius:8px;background:var(--soft);font-size:14px;font-weight:600}
+  .seg{display:flex;border-bottom:1px solid var(--line);margin-top:18px}
+  .seg button{flex:1;padding:12px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:1.5px solid transparent;margin-bottom:-1px}
+  .seg button.on{color:var(--ink);border-color:var(--ink)}
+  .note{font-size:12px;color:var(--muted);line-height:1.5;background:var(--soft);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+  .dm{max-width:78%;margin:8px 0 8px auto;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;display:block}
+  .dm b{display:block;font-size:14px;font-weight:700}.dm small{display:block;color:var(--muted);font-size:12px;margin:2px 0 8px}
+  .dm p{font-size:13px;line-height:1.5;white-space:pre-line}
+  .dm time{display:block;text-align:right;font-size:11px;color:var(--muted);margin-top:8px}
+
+  /* ---------- Lecteur (depuis recherche / enregistrés) ---------- */
+  #viewer{position:fixed;top:0;left:0;right:0;bottom:var(--tabh);z-index:12;background:var(--bg);overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
+  #viewer::-webkit-scrollbar{display:none}
+  .vback{position:fixed;top:calc(16px + var(--top));left:calc(var(--pad) - 10px);z-index:13;width:40px;height:40px;display:grid;place-items:center}
+
+  /* ---------- Fiche info ---------- */
+  .info-body{padding:18px 20px calc(24px + var(--bottom));overflow-y:auto}
+  .info-body h3{font-size:20px;font-weight:700;letter-spacing:-.3px}
+  .info-body .by{color:var(--muted);font-size:14px;margin-top:2px}
+  .kv{margin-top:16px;border-top:1px solid var(--line)}
+  .kv div{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .kv span{color:var(--muted)}.kv b{font-weight:500;text-align:right}
+  .ctx{margin-top:16px;font-size:15px;line-height:1.6}
+  .wslink{display:inline-block;margin-top:18px;font-size:14px;font-weight:600;color:var(--ink)}
+  .send-row{display:flex;gap:8px;padding:0 18px 4px}
+  .send-row input{flex:1;background:var(--soft);border:0;border-radius:999px;padding:11px 16px;color:var(--ink);font:15px var(--sans);outline:0}
+  .send-row button{font-weight:600;font-size:14px;padding:0 6px}
+  .send-row button:disabled{opacity:.3}
 
   .burst{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;color:var(--ink);pointer-events:none;z-index:4;animation:burst .75s ease-out forwards}
   @keyframes burst{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.1);opacity:.9}60%{transform:scale(1)}100%{transform:scale(1.2) translateY(-30px);opacity:0}}
@@ -101,6 +167,7 @@
 
   .navbtn{position:fixed;z-index:5;width:38px;height:38px;border-radius:99px;border:1px solid var(--line);background:var(--bg);display:none;place-items:center}
   @media (hover:hover) and (pointer:fine){.navbtn{display:grid}}
+  .navbtn{top:auto}
   #upBtn{right:20px;top:calc(50% - 44px)} #downBtn{right:20px;top:calc(50% + 6px)}
   #prevBtn{left:20px;top:50%} #nextBtn{right:70px;top:50%}
 
@@ -134,7 +201,7 @@
   .share-opts button{display:flex;align-items:center;gap:14px;padding:15px 2px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}
   .share-opts button:last-child{border-bottom:0}
 
-  .toast{position:fixed;left:50%;top:calc(24px + var(--top));transform:translate(-50%,-10px);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;transition:.25s;z-index:40;pointer-events:none}
+  .toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 64px);transform:translate(-50%,10px);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;transition:.25s;z-index:40;pointer-events:none}
   .toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
@@ -161,11 +228,21 @@
 </section>
 
 <main id="feed" class="hidden" aria-label="Fil de poèmes"></main>
-<button class="me hidden" id="meBtn" aria-label="Réglages"></button>
+<section class="view hidden" id="searchView"></section>
+<section class="view hidden" id="savedView"></section>
+<section class="view hidden" id="inboxView"></section>
+<section class="view hidden" id="profileView"></section>
+<div id="viewer" class="hidden"></div>
+<button class="vback hidden" id="vBack" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+<nav class="tabbar hidden" id="tabbar">
+  <button data-tab="feed" aria-label="Fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path class="fillable" d="M3.5 10.2L12 3.5l8.5 6.7V20a.5.5 0 01-.5.5h-5v-6h-6v6H4a.5.5 0 01-.5-.5z"/></svg></button>
+  <button data-tab="search" aria-label="Recherche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button>
+  <button data-tab="saved" aria-label="Enregistrés"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path class="fillable" d="M6 3.5h12v17l-6-4.5-6 4.5z"/></svg></button>
+  <button data-tab="inbox" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path class="fillable" d="M20.5 12a8.5 8.5 0 01-12.4 7.5L3.5 20.5l1.1-4.4A8.5 8.5 0 1120.5 12z"/></svg></button>
+  <button data-tab="profile" aria-label="Profil"><span class="av" id="tabAv"></span></button>
+</nav>
 <button class="navbtn hidden" id="upBtn" aria-label="Poème précédent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 15l6-6 6 6"/></svg></button>
 <button class="navbtn hidden" id="downBtn" aria-label="Poème suivant"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9l6 6 6-6"/></svg></button>
-<button class="navbtn hidden" id="prevBtn" aria-label="Page précédente"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></button>
-<button class="navbtn hidden" id="nextBtn" aria-label="Page suivante"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg></button>
 <div id="measure"></div>
 
 <div class="scrim" id="scrim"></div>
@@ -182,6 +259,13 @@
     <button id="copyFull">Copier le poème entier</button>
     <button id="nativeShare">Partager via…</button>
   </div>
+  <div class="sec-t" style="padding:0 18px">Envoyer à un ami</div>
+  <form class="send-row" id="sendForm"><input id="sendTo" placeholder="@pseudo" autocomplete="off" maxlength="25"><button id="sendBtn" disabled>Envoyer</button></form>
+  <div style="height:calc(14px + var(--bottom))"></div>
+</div>
+<div class="sheet" id="infoSheet" role="dialog" aria-label="À propos du poème" style="height:auto;max-height:80dvh">
+  <header><div class="grab"></div><b>À propos</b><button class="close" data-close>×</button></header>
+  <div class="info-body" id="infoBody"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -601,7 +685,7 @@ Elles ont suivi l'eau pour ne plus revenir ;
 La vague en a paru rouge et comme enflammée.
 Ce soir, ma robe encore en est tout embaumée…
 Respires-en sur moi l'odorant souvenir.`},
-{id:"je-vis",fame:.7,tags:"amour,passion",poet:"labe",title:"Je vis, je meurs",src:"Sonnets, 1555",text:
+{id:"je-vis",fame:.7,tags:"amour,passion",poet:"labe",title:"Je vis, je meurs",src:"Œuvres, 1555 — sonnet VIII",text:
 `Je vis, je meurs ; je me brûle et me noie ;
 J'ai chaud extrême en endurant froidure :
 La vie m'est et trop molle et trop dure.
@@ -685,7 +769,7 @@ Vit aux dépens de celui qui l'écoute :
 Cette leçon vaut bien un fromage, sans doute.
 Le Corbeau, honteux et confus,
 Jura, mais un peu tard, qu'on ne l'y prendrait plus.`},
-{id:"plus-ne-suis",fame:.55,tags:"amour,temps,regret",poet:"marot",title:"Plus ne suis ce que j'ai été",src:"L'Adolescence clémentine, 1532",text:
+{id:"plus-ne-suis",fame:.55,tags:"amour,temps,regret",poet:"marot",title:"Plus ne suis ce que j'ai été",src:"Poésies, XVIe siècle",text:
 `Plus ne suis ce que j'ai été,
 Et plus ne saurais jamais l'être ;
 Mon beau printemps et mon été
@@ -745,9 +829,45 @@ Garde bien que tu ne l'éveilles ;
 Car voici la première nuit
 Que le pauvre Scarron sommeille.`},
 ];
+
+/* Contexte affiché dans la fiche « i » */
+const CTX={
+albatros:"Ajouté à la deuxième édition des Fleurs du mal (1861). Baudelaire y fait de l'oiseau des mers, maladroit une fois capturé sur le pont, une image du poète incompris parmi les hommes.",
+correspondances:"Sonnet central des Fleurs du mal, souvent vu comme un texte fondateur du symbolisme : parfums, couleurs et sons « se répondent », ce qu'on appelle des synesthésies.",
+harmonie:"Une forme rare : le pantoum, venu de la poésie malaise. Les vers 2 et 4 de chaque strophe reviennent comme vers 1 et 3 de la suivante, d'où l'effet de valse lente.",
+recueillement:"Sonnet tardif, paru en revue en 1861 puis intégré à l'édition posthume des Fleurs du mal. Le poète y parle à sa Douleur comme à une compagne.",
+dormeur:"Écrit en octobre 1870, pendant la guerre franco-prussienne. Rimbaud a seize ans. Tout le sonnet décrit un paysage paisible jusqu'au dernier vers.",
+boheme:"Sonnet de 1870, sous-titré « Fantaisie ». Il évoque les fugues à pied du jeune Rimbaud sur les routes, entre la Belgique et les Ardennes.",
+sensation:"L'un des tout premiers poèmes de Rimbaud, daté de mars 1870 : il a quinze ans.",
+"chanson-automne":"Tiré du premier recueil de Verlaine. Les premiers vers ont été lus à la radio de Londres (BBC) en juin 1944 pour annoncer le Débarquement aux réseaux de la Résistance.",
+"reve-familier":"Sonnet des Poèmes saturniens : la figure d'une femme idéale, à la fois inconnue et familière, qui revient de rêve en rêve.",
+"il-pleure":"Des Romances sans paroles, écrites pendant la liaison tumultueuse de Verlaine avec Rimbaud. Le poème porte en épigraphe un vers attribué à Rimbaud : « Il pleut doucement sur la ville ».",
+"ciel-toit":"Écrit en prison, à Mons en Belgique, où Verlaine fut incarcéré après avoir blessé Rimbaud d'un coup de revolver en 1873.",
+demain:"Hugo écrit ce poème pour sa fille Léopoldine, noyée en 1843 dans la Seine à Villequier. Ce n'est qu'au dernier vers qu'on comprend où il se rend.",
+semailles:"Une méditation sur le geste du semeur au crépuscule, tirée des Chansons des rues et des bois.",
+mirabeau:"Poème d'Alcools souvent associé à la fin de la relation d'Apollinaire avec la peintre Marie Laurencin.",
+"automne-apo":"Comme tout le recueil Alcools, le poème est publié sans aucune ponctuation : c'est le rythme du vers qui guide la lecture.",
+desdichado:"« El Desdichado » signifie « le déshérité » en espagnol. Sonnet des Chimères, réputé pour ses références mythologiques et son mystère.",
+mignonne:"Ode adressée à une jeune femme, souvent identifiée à Cassandre Salviati. C'est l'un des textes les plus célèbres sur le thème du carpe diem : profiter de sa jeunesse.",
+tristesse:"Écrit en 1840, à une période de profond découragement pour Musset, alors âgé de vingt-neuf ans.",
+ulysse:"Du Bellay l'écrit à Rome, où il s'ennuie au service de son oncle cardinal. Liré, cité à la fin, est son village natal en Anjou, au bord de la Loire.",
+conquerants:"Sonnet des Trophées consacré aux conquistadors espagnols. Palos de Moguer est le port d'où partit Christophe Colomb en 1492.",
+"roses-saadi":"Publié après la mort de la poétesse. Saadi est un poète persan du XIIIe siècle, auteur du Jardin des roses, qui inspire le poème.",
+"je-vis":"Sonnet de la poétesse lyonnaise Louise Labé. Il enchaîne les contraires (chaud et froid, rire et larmes) pour dire le désordre de la passion.",
+"brise-marine":"Écrit en 1865, publié l'année suivante. Mallarmé y exprime un désir de fuite vers l'ailleurs, et l'angoisse de la page blanche.",
+"ici-bas":"Sully Prudhomme fut le premier lauréat du prix Nobel de littérature, en 1901.",
+"temps-manteau":"Rondeau du prince Charles d'Orléans, qui passa vingt-cinq ans prisonnier en Angleterre après la bataille d'Azincourt. Il célèbre le retour du printemps.",
+"corbeau-renard":"Deuxième fable du premier livre des Fables (1668), reprise d'Ésope. La morale est dite par le Renard lui-même.",
+"plus-ne-suis":"Courte pièce de Clément Marot, poète de la cour de François Ier, sur la jeunesse qui s'en va.",
+"sonnet-arvers":"Le seul poème resté célèbre de Félix Arvers, si connu qu'on l'appelle simplement « le sonnet d'Arvers ».",
+aliscams:"Les Alyscamps sont une ancienne nécropole romaine d'Arles. Toulet a inventé la forme de la « contrerime » ; le recueil paraît après sa mort.",
+papillon:"Court poème des Nouvelles Méditations poétiques : en dix vers, le papillon devient une image du désir qui ne se fixe jamais.",
+"epitaphe-scarron":"L'épitaphe que Scarron, paralysé pendant une grande partie de sa vie, écrivit pour lui-même. Il fut le premier mari de la future Madame de Maintenon."
+};
+POEMS.forEach(p=>p.ctx=CTX[p.id]||"");
 /* ===================== STOCKAGE (local, tolérant) ===================== */
 const KEY="poetreel.v1";
-let store={user:"",poets:[],likes:{},comments:{},prof:null,hist:[],known:{}};
+let store={user:"",poets:[],likes:{},comments:{},prof:null,hist:[],known:{},saved:{},dms:{}};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s) store=Object.assign(store,s);}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
 
@@ -756,6 +876,8 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const ICON={
   heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 7.9 3 4 6.8 4c2.2 0 3.9 1.2 5.2 3 1.3-1.8 3-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 15.9 12 20.5 12 20.5z"/></svg>',
   comment:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.5 12a8.5 8.5 0 01-12.4 7.5L3.5 20.5l1.1-4.4A8.5 8.5 0 1120.5 12z"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg>',
+  bookmark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3.5h12v17l-6-4.5-6 4.5z"/></svg>',
   share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.5 2.5L10.5 13.5M21.5 2.5l-7 19-4-8-8-4 19-7z"/></svg>',
 };
 let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1700)}
@@ -791,9 +913,11 @@ $("#startBtn").onclick=()=>{
   if(step===1){
     const u=$("#username").value.trim().replace(/^@/,"");
     if(!/^[\p{L}\p{N}_.-]{2,24}$/u.test(u)){$("#uerr").textContent="Lettres, chiffres, _ . - uniquement (2 à 24).";return}
-    store.user=u;save();setStep(2);return;
+    store.user=u;save();if(settingsMode&&store.poets.length){openFeed(true);return}setStep(2);return;
   }
-  store.poets=[...picked];save();openFeed();
+  const wasSettings=settingsMode&&catalogBuilt;store.poets=[...picked];save();
+  if(wasSettings){store.poets.forEach(k=>{if(store.prof&&(store.prof.poet[k]||0)<.3)store.prof.poet[k]=.5});save();openFeed(true);return}
+  openFeed();
 };
 $("#backBtn").onclick=()=>{if(settingsMode&&store.poets.length){openFeed(true);return}setStep(1)};
 /* ===================== RECOMMANDATION =====================
@@ -885,7 +1009,7 @@ function buildCatalog(){
 function fitToScreen(){
   buildCatalog();
   const root=document.documentElement,m=$("#measure");
-  m.innerHTML=`<div class="reel" style="width:${innerWidth}px;height:${innerHeight}px"><div class="track"><div class="page"><div class="page-inner" style="justify-content:flex-start"></div></div></div></div>`;
+  m.innerHTML=`<div class="reel" style="width:${innerWidth}px"><div class="track"><div class="page"><div class="page-inner" style="justify-content:flex-start"></div></div></div></div>`;
   const inner=m.querySelector(".page-inner"),avail=inner.clientHeight;
   const tallest=POEMS;
   let px=verseSize(innerWidth);
@@ -929,7 +1053,8 @@ function reelEl(p,idx){
   const pages=paginate(p),liked=!!store.likes[p.id],nc=(store.comments[p.id]||[]).length;
   const el=document.createElement("section");
   el.className="reel";el.dataset.id=p.id;el.dataset.idx=idx;el._pages=pages;
-  el.innerHTML=`    <div class="track">${pages.map((pg,i)=>`<div class="page"><div class="page-inner">${i===0?titleHTML(p):""}${pg.map(stanzaHTML).join("")}</div></div>`).join("")}</div>
+  el.innerHTML=`<button class="info" aria-label="À propos du poème">${ICON.info}</button>
+    <div class="track">${pages.map((pg,i)=>`<div class="page"><div class="page-inner">${i===0?titleHTML(p):""}${pg.map(stanzaHTML).join("")}</div></div>`).join("")}</div>
     ${pages.length>1?`<div class="dots">${pages.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>`:""}
     ${pages.length>1&&idx<2?`<div class="hint">la suite →</div>`:""}
     <div class="foot"><div class="foot-in">
@@ -937,6 +1062,7 @@ function reelEl(p,idx){
       <button class="act like ${liked?"liked":""}" aria-label="J'aime">${ICON.heart}</button>
       <button class="act cmt" aria-label="Commenter">${ICON.comment}<span class="n">${nc||""}</span></button>
       <button class="act shr" aria-label="Partager">${ICON.share}</button>
+      <button class="act save ${store.saved[p.id]?"saved":""}" aria-label="Enregistrer">${ICON.bookmark}</button>
     </div></div>`;
   const track=el.querySelector(".track"),dots=[...el.querySelectorAll(".dots i")],hint=el.querySelector(".hint");
   el._page=0;
@@ -949,6 +1075,8 @@ function reelEl(p,idx){
   el.querySelector(".like").onclick=()=>toggleLike(el);
   el.querySelector(".cmt").onclick=()=>openComments(p.id);
   el.querySelector(".shr").onclick=()=>openShare(el);
+  el.querySelector(".save").onclick=()=>toggleSave(p.id);
+  el.querySelector(".info").onclick=()=>openInfo(p.id);
   let last=0;
   track.addEventListener("click",e=>{const n=Date.now();if(n-last<320){if(!store.likes[p.id])toggleLike(el);burst(el,e)}last=n});
   return el;
@@ -985,20 +1113,172 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{
 }),{root:feed,threshold:.6});
 new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>n.nodeType===1&&io.observe(n)))).observe(feed,{childList:true});
 
-const FEED_UI=["#feed","#meBtn","#upBtn","#downBtn","#prevBtn","#nextBtn"];
+/* ===================== ONGLETS ===================== */
+let tab="feed";
+const VIEWS={feed:"#feed",search:"#searchView",saved:"#savedView",inbox:"#inboxView",profile:"#profileView"};
+function showTab(t){
+  closeViewer();
+  if(tab==="feed"&&t!=="feed")endView();
+  tab=t;
+  Object.entries(VIEWS).forEach(([k,sel])=>$(sel).classList.toggle("hidden",k!==t));
+  ["#upBtn","#downBtn"].forEach(s=>$(s).classList.toggle("hidden",t!=="feed"));
+  document.querySelectorAll(".tabbar button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  if(t==="feed"&&current)startView(current);
+  if(t==="search")renderSearch();
+  if(t==="saved")renderSaved();
+  if(t==="inbox")renderInbox();
+  if(t==="profile")renderProfile();
+}
+document.querySelectorAll(".tabbar button").forEach(b=>b.onclick=()=>{
+  if(b.dataset.tab===tab&&tab==="feed"){feed.scrollTo({top:0,behavior:"smooth"});return}
+  if(b.dataset.tab==="search"&&tab==="search"){searchState={q:"",poet:null}}
+  showTab(b.dataset.tab);
+});
 function openFeed(keep){
-  if(keep===true){$("#onboard").classList.add("hidden");FEED_UI.forEach(s=>$(s).classList.remove("hidden"));if(current)startView(current);return}
-  $("#onboard").classList.add("hidden");FEED_UI.forEach(s=>$(s).classList.remove("hidden"));
-  $("#meBtn").textContent=store.user[0].toUpperCase();
-  endView();current=null;
+  $("#onboard").classList.add("hidden");$("#tabbar").classList.remove("hidden");
+  $("#tabAv").textContent=store.user[0].toUpperCase();
+  if(keep===true){showTab("profile");return}
+  buildCatalog();endView();current=null;
   if(!store.prof)initProfile();else store.poets.forEach(k=>{if((store.prof.poet[k]||0)<.3)store.prof.poet[k]=.5});
   save();feed.innerHTML="";queue=[];rendered=0;renderMore(3);feed.scrollTop=0;
+  showTab("feed");
 }
-$("#meBtn").onclick=()=>{
-  endView();FEED_UI.forEach(s=>$(s).classList.add("hidden"));
+function openSettings(){
+  endView();closeViewer();
+  Object.values(VIEWS).forEach(s=>$(s).classList.add("hidden"));$("#tabbar").classList.add("hidden");["#upBtn","#downBtn"].forEach(s=>$(s).classList.add("hidden"));
   settingsMode=true;$("#s2title").textContent="Tes poètes";$("#s2sub").textContent="Modifie-les quand tu veux. Ton fil les met en avant, avec un peu de découverte.";
   picked=new Set(store.poets);renderPoets();setStep(2);$("#onboard").classList.remove("hidden");
-};
+}
+
+/* ===================== ENREGISTRER ===================== */
+function toggleSave(id){
+  haptic();
+  if(store.saved[id])delete store.saved[id];else{store.saved[id]=Date.now();if(store.prof)learn(byId[id],1.2)}
+  save();
+  document.querySelectorAll(`.reel[data-id="${id}"] .save`).forEach(b=>b.classList.toggle("saved",!!store.saved[id]));
+  toast(store.saved[id]?"Enregistré":"Retiré des enregistrements");
+  if(tab==="saved"&&$("#viewer").classList.contains("hidden"))renderSaved();
+}
+
+/* ===================== LECTEUR (liste de poèmes) ===================== */
+function openViewer(list,startId){
+  if(tab==="feed")endView();
+  const v=$("#viewer");v.innerHTML="";
+  list.forEach((p,i)=>v.appendChild(reelEl(p,99+i)));
+  v.classList.remove("hidden");$("#vBack").classList.remove("hidden");
+  const i=Math.max(0,list.findIndex(p=>p.id===startId));
+  v.scrollTop=i*v.clientHeight;
+}
+function closeViewer(){$("#viewer").classList.add("hidden");$("#vBack").classList.add("hidden");$("#viewer").innerHTML="";}
+$("#vBack").onclick=()=>{closeViewer();if(tab==="saved")renderSaved();if(tab==="profile")renderProfile()};
+
+/* ===================== RECHERCHE ===================== */
+let searchState={q:"",poet:null};
+const norm=t=>t.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const poemsOf=k=>POEMS.filter(p=>p.poet===k);
+const firstLine=p=>p.text.split("\n")[0];
+const poemItem=p=>`<button class="item" data-poem="${p.id}"><div class="tx"><b>${esc(p.title)}</b><small>${esc(POETS[p.poet].name)} · ${esc(firstLine(p))}</small></div><span class="chev">›</span></button>`;
+const poetItem=k=>{const P=POETS[k],n=poemsOf(k).length,f=store.poets.includes(k);
+  return `<div class="item" data-poet="${k}" role="button"><span class="av">${esc(P.name.split(" ").slice(-1)[0][0])}</span><div class="tx"><b>${esc(P.name)}</b><small>${P.years} · ${n} poème${n>1?"s":""}</small></div><button class="follow ${f?"on":""}" data-follow="${k}">${f?"Suivi":"Suivre"}</button></div>`};
+function toggleFollow(k){
+  const i=store.poets.indexOf(k);
+  if(i>=0){if(store.poets.length===1){toast("Garde au moins un poète");return}store.poets.splice(i,1);if(store.prof)store.prof.poet[k]=Math.min(store.prof.poet[k]||0,0)}
+  else{store.poets.push(k);if(store.prof)store.prof.poet[k]=Math.max(store.prof.poet[k]||0,.5)}
+  save();renderSearch();
+}
+function renderSearch(){
+  const v=$("#searchView"),{q,poet}=searchState;
+  if(poet){
+    const P=POETS[poet],f=store.poets.includes(poet),list=poemsOf(poet);
+    v.innerHTML=`<div class="vh"><button class="ib" id="sBack" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button><h1>${esc(P.name)}</h1></div>
+      <div class="vbody"><div class="ph"><div class="big">${esc(P.name.split(" ").slice(-1)[0][0])}</div><h2>${esc(P.name)}</h2><div style="color:var(--muted);font-size:13px;margin-top:2px">${P.years}</div>
+      <div style="margin-top:14px"><button class="follow ${f?"on":""}" data-follow="${poet}" style="padding:9px 28px">${f?"Suivi":"Suivre"}</button></div></div>
+      <div class="sec-t">Poèmes</div>${list.map(poemItem).join("")||'<div class="empty-v">Aucun poème court pour l\'instant.</div>'}</div>`;
+    $("#sBack").onclick=()=>{searchState.poet=null;renderSearch()};
+  }else{
+    const nq=norm(q.trim()),keys=Object.keys(POETS).sort((a,b)=>POETS[a].name.split(" ").slice(-1)[0].localeCompare(POETS[b].name.split(" ").slice(-1)[0]));
+    const poets=keys.filter(k=>!nq||norm(POETS[k].name).includes(nq));
+    const poems=nq?POEMS.filter(p=>norm(p.title).includes(nq)||norm(p.text).includes(nq)):[];
+    v.innerHTML=`<div class="vh"><h1>Recherche</h1></div><div class="vbody">
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><input id="sq" placeholder="Poètes, titres, vers…" value="${esc(q)}" autocomplete="off" enterkeyhint="search"></label>
+      <div id="sres">${poets.length?`<div class="sec-t">Poètes</div>${poets.map(poetItem).join("")}`:""}
+      ${poems.length?`<div class="sec-t">Poèmes</div>${poems.map(poemItem).join("")}`:""}
+      ${!poets.length&&!poems.length?'<div class="empty-v">Aucun résultat.</div>':""}</div></div>`;
+    const inp=$("#sq");inp.oninput=()=>{searchState.q=inp.value;const pos=inp.selectionStart;renderSearch();const n=$("#sq");n.focus();n.setSelectionRange(pos,pos)};
+  }
+}
+$("#searchView").addEventListener("click",e=>{
+  const fb=e.target.closest("[data-follow]");if(fb){e.stopPropagation();toggleFollow(fb.dataset.follow);return}
+  const pi=e.target.closest("[data-poem]");if(pi){const p=byId[pi.dataset.poem];const list=searchState.poet?poemsOf(searchState.poet):[p];openViewer(list,p.id);return}
+  const po=e.target.closest("[data-poet]");if(po){searchState.poet=po.dataset.poet;renderSearch();$("#searchView").scrollTop=0}
+});
+
+/* ===================== ENREGISTRÉS ===================== */
+function savedList(){return Object.entries(store.saved).sort((a,b)=>b[1]-a[1]).map(([id])=>byId[id]).filter(Boolean)}
+function renderSaved(){
+  const list=savedList();
+  $("#savedView").innerHTML=`<div class="vh"><h1>Enregistrés</h1></div><div class="vbody">${list.length?list.map(poemItem).join(""):
+    `<div class="empty-v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 3.5h12v17l-6-4.5-6 4.5z"/></svg><b>Rien d'enregistré</b>Touche le signet sous un poème pour le retrouver ici.</div>`}</div>`;
+}
+$("#savedView").addEventListener("click",e=>{const pi=e.target.closest("[data-poem]");if(pi)openViewer(savedList(),pi.dataset.poem)});
+
+/* ===================== MESSAGES ===================== */
+let thread=null;
+function renderInbox(){
+  const v=$("#inboxView"),convs=Object.entries(store.dms).sort((a,b)=>b[1][b[1].length-1].t-a[1][a[1].length-1].t);
+  if(thread&&store.dms[thread]){
+    v.innerHTML=`<div class="vh"><button class="ib" id="tBack" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button><h1>@${esc(thread)}</h1></div>
+    <div class="vbody"><div class="note">Aperçu : tes envois sont gardés sur ce téléphone. Ils partiront vraiment quand les comptes Poetreel seront en ligne.</div>
+    ${store.dms[thread].map(m=>{const p=byId[m.id];return p?`<button class="dm" data-poem="${p.id}"><b>${esc(p.title)}</b><small>${esc(POETS[p.poet].name)}</small><p>${esc(m.passage||firstLine(p))}</p><time>${timeAgo(m.t)}</time></button>`:""}).join("")}</div>`;
+    $("#tBack").onclick=()=>{thread=null;renderInbox()};
+    return;
+  }
+  v.innerHTML=`<div class="vh"><h1>Messages</h1></div><div class="vbody">${convs.length?convs.map(([u,ms])=>{const p=byId[ms[ms.length-1].id];
+    return `<button class="item" data-thread="${esc(u)}"><span class="av">${esc(u[0].toUpperCase())}</span><div class="tx"><b>@${esc(u)}</b><small>Tu as envoyé « ${esc(p?p.title:"un poème")} » · ${timeAgo(ms[ms.length-1].t)}</small></div></button>`}).join(""):
+    `<div class="empty-v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M20.5 12a8.5 8.5 0 01-12.4 7.5L3.5 20.5l1.1-4.4A8.5 8.5 0 1120.5 12z"/></svg><b>Aucun message</b>Envoie un poème à un ami depuis le bouton partager.</div>`}</div>`;
+}
+$("#inboxView").addEventListener("click",e=>{
+  const t=e.target.closest("[data-thread]");if(t){thread=t.dataset.thread;renderInbox();return}
+  const pi=e.target.closest("[data-poem]");if(pi)openViewer([byId[pi.dataset.poem]],pi.dataset.poem);
+});
+
+/* ===================== PROFIL ===================== */
+let profSeg="liked";
+function renderProfile(){
+  const liked=Object.keys(store.likes).map(id=>byId[id]).filter(Boolean),read=new Set(store.hist.map(h=>h.id)).size;
+  const list=profSeg==="liked"?liked:store.poets.map(k=>k);
+  $("#profileView").innerHTML=`<div class="vh"><h1>@${esc(store.user)}</h1></div><div class="vbody">
+    <div class="ph"><div class="big">${esc(store.user[0].toUpperCase())}</div>
+    <div class="stats"><div><b>${read}</b><span>lus</span></div><div><b>${liked.length}</b><span>j'aime</span></div><div><b>${Object.keys(store.saved).length}</b><span>enregistrés</span></div></div>
+    <div class="btnrow" style="width:100%"><button class="btn2" id="editPoets">Modifier mes poètes</button><button class="btn2" id="editName">Changer de pseudo</button></div></div>
+    <div class="seg"><button data-seg="liked" class="${profSeg==="liked"?"on":""}">J'aime</button><button data-seg="poets" class="${profSeg==="poets"?"on":""}">Poètes suivis</button></div>
+    ${profSeg==="liked"?(liked.length?liked.map(poemItem).join(""):'<div class="empty-v">Double-tape un poème pour l\'aimer.</div>')
+      :store.poets.map(k=>`<div class="item"><span class="av">${esc(POETS[k].name.split(" ").slice(-1)[0][0])}</span><div class="tx"><b>${esc(POETS[k].name)}</b><small>${POETS[k].years}</small></div></div>`).join("")}
+  </div>`;
+  $("#editPoets").onclick=openSettings;
+  $("#editName").onclick=()=>{endView();Object.values(VIEWS).forEach(s=>$(s).classList.add("hidden"));$("#tabbar").classList.add("hidden");settingsMode=true;$("#onboard").classList.remove("hidden");setStep(1)};
+}
+$("#profileView").addEventListener("click",e=>{
+  const sg=e.target.closest("[data-seg]");if(sg){profSeg=sg.dataset.seg;renderProfile();return}
+  const pi=e.target.closest("[data-poem]");if(pi){const liked=Object.keys(store.likes).map(id=>byId[id]).filter(Boolean);openViewer(liked,pi.dataset.poem)}
+});
+
+/* ===================== FICHE « i » ===================== */
+function openInfo(id){
+  const p=byId[id],P=POETS[p.poet],ws="https://fr.wikisource.org/w/index.php?search="+encodeURIComponent(p.title.replace(/…$/,"")+" "+P.name);
+  $("#infoBody").innerHTML=`<h3>${esc(p.title)}</h3><div class="by">${esc(P.name)} (${P.years})</div>
+    <div class="kv"><div><span>Source</span><b>${esc(p.src)}</b></div><div><span>Forme</span><b>${esc(formOf(p))}</b></div><div><span>Droits</span><b>Domaine public</b></div></div>
+    ${p.ctx?`<p class="ctx">${esc(p.ctx)}</p>`:""}
+    <a class="wslink" href="${ws}" target="_blank" rel="noopener">Lire sur Wikisource ↗</a>`;
+  openSheet("#infoSheet");
+}
+function formOf(p){
+  const st=stanzas(p),sizes=st.map(s=>s.length).join("-");
+  if(sizes==="4-4-3-3")return"Sonnet";
+  if(st.length===1)return st[0].length+" vers";
+  return st.length+" strophes · "+st.reduce((n,s)=>n+s.length,0)+" vers";
+}
+
 /* re-découpe si l'écran change de taille (rotation…) */
 let rT;addEventListener("resize",()=>{clearTimeout(rT);rT=setTimeout(()=>{
   const k=innerWidth+"x"+innerHeight;if(k===layoutKey||feed.classList.contains("hidden"))return;layoutKey=k;fitToScreen();
@@ -1010,9 +1290,9 @@ layoutKey=innerWidth+"x"+innerHeight;
 
 const goV=d=>feed.scrollBy({top:d*feed.clientHeight,behavior:"smooth"});
 const goH=d=>{const t=current&&current.querySelector(".track");if(t)t.scrollBy({left:d*t.clientWidth,behavior:"smooth"})};
-$("#upBtn").onclick=()=>goV(-1);$("#downBtn").onclick=()=>goV(1);$("#prevBtn").onclick=()=>goH(-1);$("#nextBtn").onclick=()=>goH(1);
+$("#upBtn").onclick=()=>goV(-1);$("#downBtn").onclick=()=>goV(1);
 document.addEventListener("keydown",e=>{
-  if(feed.classList.contains("hidden")||document.activeElement.tagName==="INPUT"||document.querySelector(".sheet.open"))return;
+  if(feed.classList.contains("hidden")||!$("#viewer").classList.contains("hidden")||document.activeElement.tagName==="INPUT"||document.querySelector(".sheet.open"))return;
   const k={ArrowDown:()=>goV(1),ArrowUp:()=>goV(-1),ArrowRight:()=>goH(1),ArrowLeft:()=>goH(-1)}[e.key];
   if(k){e.preventDefault();k()}
 });
@@ -1052,6 +1332,12 @@ function openShare(el){
 async function copy(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg);if(store.prof)learn(shareCtx.p,1.5)}catch(e){toast("Copie impossible ici")}}
 $("#copyQuote").onclick=()=>{const{p,passage}=shareCtx;copy(`${passage}\n\n— ${POETS[p.poet].name}, « ${p.title} »\nvia Poetreel`,"Passage copié")};
 $("#copyFull").onclick=()=>{const{p}=shareCtx;copy(`${p.title}\n${POETS[p.poet].name}\n\n${p.text}\n\nvia Poetreel`,"Poème copié")};
+$("#sendTo").addEventListener("input",e=>$("#sendBtn").disabled=e.target.value.replace(/^@/,"").trim().length<2);
+$("#sendForm").addEventListener("submit",e=>{
+  e.preventDefault();const u=$("#sendTo").value.trim().replace(/^@/,"");if(u.length<2)return;
+  (store.dms[u]=store.dms[u]||[]).push({id:shareCtx.p.id,passage:shareCtx.passage.split("\n").slice(0,4).join("\n"),t:Date.now()});
+  if(store.prof)learn(shareCtx.p,1.5);save();$("#sendTo").value="";$("#sendBtn").disabled=true;closeSheets();toast("Envoyé à @"+u);
+});
 $("#nativeShare").onclick=async()=>{
   const{p,passage}=shareCtx,text=`${passage}\n\n— ${POETS[p.poet].name}, « ${p.title} »`;
   try{if(!navigator.share)throw 0;await navigator.share({title:p.title,text})}catch(e){if(e&&e.name==="AbortError")return;copy(text,"Partage indisponible ici : passage copié")}
