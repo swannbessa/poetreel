@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Poetreel">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>Poetreel — le fil de poèmes</title>
+
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:block;src:url(fonts/inter-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:block;src:url(fonts/inter-latin-ext-400-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:block;src:url(fonts/inter-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:block;src:url(fonts/inter-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:block;src:url(fonts/inter-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:block;src:url(fonts/inter-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:block;src:url(fonts/inter-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:block;src:url(fonts/inter-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
+  :root{
+    --bg:#ffffff; --ink:#111111; --muted:rgba(17,17,17,.45); --line:rgba(17,17,17,.12); --soft:rgba(17,17,17,.04); --on-ink:#ffffff;
+    --serif:'Inter', system-ui, sans-serif; --sans:'Inter', system-ui, sans-serif;
+    --top:env(safe-area-inset-top,0px); --bottom:env(safe-area-inset-bottom,0px);
+    --verse:min(17px,4.3vw);           /* même taille pour TOUS les poèmes */
+    --pad:22px;
+  }
+  @media (prefers-color-scheme:dark){:root{--bg:#000;--ink:#ededed;--muted:rgba(237,237,237,.45);--line:rgba(237,237,237,.14);--soft:rgba(237,237,237,.05);--on-ink:#000}}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;-webkit-text-size-adjust:100%;overscroll-behavior:none;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  .hidden{display:none!important}
+
+  /* ---------- Onboarding / réglages (style app tech : étapes, pastilles) ---------- */
+  #onboard{position:fixed;inset:0;display:flex;flex-direction:column;padding:calc(16px + var(--top)) 24px calc(20px + var(--bottom))}
+  .ob-top{display:flex;align-items:center;gap:14px;height:40px;max-width:520px;width:100%;margin:0 auto}
+  .back{width:32px;height:32px;display:grid;place-items:center;border-radius:99px;visibility:hidden}
+  .back.show{visibility:visible}
+  .bar{flex:1;height:3px;border-radius:9px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;width:50%;background:var(--ink);transition:width .3s}
+  .steps{flex:1;overflow-y:auto;max-width:520px;width:100%;margin:0 auto;padding-top:36px}
+  .logo{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:28px}
+  .step h1{font-size:28px;font-weight:700;letter-spacing:-.6px;line-height:1.15}
+  .step p.sub{color:var(--muted);margin:10px 0 28px;font-size:15px;line-height:1.5}
+  .field{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;transition:border-color .15s}
+  .field span{color:var(--muted);font-size:17px}
+  .field input{flex:1;background:none;border:0;outline:0;color:var(--ink);font:500 17px var(--sans);padding:15px 4px}
+  .field:focus-within{border-color:var(--ink)}
+  .err{font-size:13px;margin-top:8px;min-height:18px;color:var(--muted)}
+  .pills{display:flex;flex-wrap:wrap;gap:10px}
+  .pill{padding:11px 18px;border-radius:999px;border:1.5px solid var(--line);font-size:15px;font-weight:500;transition:.15s}
+  .pill small{color:var(--muted);font-weight:400;margin-left:6px;font-size:13px}
+  .pill.on{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+  .pill.on small{color:var(--on-ink);opacity:.6}
+  .link{font-size:14px;font-weight:600;margin-top:22px}
+  .ob-foot{max-width:520px;width:100%;margin:0 auto;padding-top:12px}
+  .cta{display:block;width:100%;padding:16px;border-radius:999px;background:var(--ink);color:var(--on-ink);font-weight:600;font-size:16px;transition:opacity .15s}
+  .cta:disabled{opacity:.25;cursor:default}
+
+  /* ---------- Feed : vertical = poème suivant, horizontal = suite du poème ---------- */
+  #feed{position:fixed;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+  #feed::-webkit-scrollbar,.track::-webkit-scrollbar{display:none}
+  .reel{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
+  .ptitle{font-weight:700;font-size:22px;letter-spacing:-.4px;line-height:1.2;margin-bottom:18px}
+  .track{height:100%;display:flex;overflow-x:scroll;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none}
+  .page{flex:0 0 100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always;
+    padding:calc(72px + var(--top)) var(--pad) calc(80px + var(--bottom))}
+  .page-inner{max-width:560px;height:100%;margin:0 auto;display:flex;flex-direction:column;justify-content:center}
+  .stanza{font-size:var(--verse);line-height:1.6;letter-spacing:-.1px}
+  .stanza + .stanza{margin-top:1em}
+  .v{display:block;padding-left:1.4em;text-indent:-1.4em}   /* vers trop long : retrait du rejet */
+
+  .dots{position:absolute;left:0;right:0;bottom:calc(74px + var(--bottom));display:flex;gap:5px;justify-content:center;pointer-events:none;z-index:2}
+  .dots i{width:5px;height:5px;border-radius:99px;background:var(--line);transition:background .2s}
+  .dots i.on{background:var(--ink)}
+
+  .foot{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:0 var(--pad) calc(20px + var(--bottom))}
+  .foot-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:6px;height:44px}
+  .poet-name{flex:1;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .act{width:40px;height:40px;display:grid;place-items:center;position:relative}
+  .act svg{width:24px;height:24px}
+  .act.liked svg path{fill:currentColor}
+  .act:active svg{transform:scale(.85)}
+  .act .n{position:absolute;top:2px;right:0;font-size:10px;color:var(--muted)}
+
+  .me{position:fixed;top:calc(22px + var(--top));right:var(--pad);z-index:5;width:28px;height:28px;border-radius:99px;
+    background:var(--ink);color:var(--on-ink);font-size:12px;font-weight:600;display:grid;place-items:center}
+
+  .burst{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;color:var(--ink);pointer-events:none;z-index:4;animation:burst .75s ease-out forwards}
+  @keyframes burst{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.1);opacity:.9}60%{transform:scale(1)}100%{transform:scale(1.2) translateY(-30px);opacity:0}}
+
+  .hint{position:absolute;left:0;right:0;bottom:calc(96px + var(--bottom));text-align:center;font-size:12px;color:var(--muted);z-index:2;pointer-events:none;transition:opacity .4s}
+  .hint.gone{opacity:0}
+
+  .navbtn{position:fixed;z-index:5;width:38px;height:38px;border-radius:99px;border:1px solid var(--line);background:var(--bg);display:none;place-items:center}
+  @media (hover:hover) and (pointer:fine){.navbtn{display:grid}}
+  #upBtn{right:20px;top:calc(50% - 44px)} #downBtn{right:20px;top:calc(50% + 6px)}
+  #prevBtn{left:20px;top:50%} #nextBtn{right:70px;top:50%}
+
+  #measure{position:absolute;left:-9999px;top:0;visibility:hidden}
+
+  /* ---------- Feuilles ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-width:620px;margin:0 auto;height:66vh;height:66dvh;background:var(--bg);
+    border-top:1px solid var(--line);border-radius:20px 20px 0 0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .26s cubic-bezier(.2,.8,.2,1)}
+  .sheet.open{transform:none}
+  .sheet header{padding:12px 18px;border-bottom:1px solid var(--line);text-align:center;position:relative}
+  .grab{width:36px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+  .sheet header b{font-size:15px;font-weight:600}
+  .sheet header small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .close{position:absolute;right:10px;top:16px;width:32px;height:32px;font-size:22px;color:var(--muted)}
+  .clist{flex:1;overflow-y:auto;padding:4px 18px}
+  .c{padding:13px 0;border-bottom:1px solid var(--line)}
+  .c b{font-size:13px;font-weight:500}.c time{color:var(--muted);font-size:12px;margin-left:6px}
+  .c p{font-size:15px;line-height:1.45;margin-top:3px;word-wrap:break-word}
+  .c .del{color:var(--muted);font-size:12px;margin-top:4px}
+  .empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:14px;line-height:1.6}
+  .compose{display:flex;gap:10px;padding:12px 16px calc(12px + var(--bottom));border-top:1px solid var(--line)}
+  .compose input{flex:1;background:var(--soft);border:0;border-radius:999px;padding:11px 16px;color:var(--ink);font:15px var(--sans);outline:0}
+  
+  .compose button{font-weight:600;font-size:14px}
+  .compose button:disabled{opacity:.3}
+  .quote-card{margin:18px 18px 0;padding:22px;border:1px solid var(--line);border-radius:16px;font-size:16px;line-height:1.6}
+  .quote-card small{display:block;margin-top:12px;font-size:13px;font-weight:600}
+  .share-opts{padding:14px 18px calc(18px + var(--bottom));display:grid}
+  .share-opts button{display:flex;align-items:center;gap:14px;padding:15px 2px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}
+  .share-opts button:last-child{border-bottom:0}
+
+  .toast{position:fixed;left:50%;top:calc(24px + var(--top));transform:translate(-50%,-10px);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;transition:.25s;z-index:40;pointer-events:none}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<section id="onboard">
+  <div class="ob-top"><button class="back" id="backBtn" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button><div class="bar"><i id="barFill"></i></div></div>
+  <div class="steps">
+    <div class="step" id="step1">
+      <div class="logo">Poetreel</div>
+      <h1>Comment veux-tu qu'on t'appelle ?</h1>
+      <p class="sub">Ton pseudo apparaîtra sur tes commentaires.</p>
+      <div class="field"><span>@</span><input id="username" maxlength="24" autocomplete="off" placeholder="pseudo"></div>
+      <div class="err" id="uerr"></div>
+    </div>
+    <div class="step hidden" id="step2">
+      <h1 id="s2title">Quels poètes aimes-tu ?</h1>
+      <p class="sub" id="s2sub">Choisis-en au moins un. Ton fil les mettra en avant, avec un peu de découverte.</p>
+      <div class="pills" id="poetGrid"></div>
+      <button class="link" id="allBtn">Tout sélectionner</button>
+    </div>
+  </div>
+  <div class="ob-foot"><button class="cta" id="startBtn">Continuer</button></div>
+</section>
+
+<main id="feed" class="hidden" aria-label="Fil de poèmes"></main>
+<button class="me hidden" id="meBtn" aria-label="Réglages"></button>
+<button class="navbtn hidden" id="upBtn" aria-label="Poème précédent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 15l6-6 6 6"/></svg></button>
+<button class="navbtn hidden" id="downBtn" aria-label="Poème suivant"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9l6 6 6-6"/></svg></button>
+<button class="navbtn hidden" id="prevBtn" aria-label="Page précédente"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></button>
+<button class="navbtn hidden" id="nextBtn" aria-label="Page suivante"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg></button>
+<div id="measure"></div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="commentSheet" role="dialog" aria-label="Commentaires">
+  <header><div class="grab"></div><b id="cCount">Commentaires</b><small id="cTitle"></small><button class="close" data-close>×</button></header>
+  <div class="clist" id="clist"></div>
+  <form class="compose" id="cForm"><input id="cInput" maxlength="400" placeholder="Ajouter un commentaire…" autocomplete="off"><button id="cSend" disabled>Publier</button></form>
+</div>
+<div class="sheet" id="shareSheet" role="dialog" aria-label="Partager" style="height:auto">
+  <header><div class="grab"></div><b>Partager</b><button class="close" data-close>×</button></header>
+  <div class="quote-card" id="qCard"></div>
+  <div class="share-opts">
+    <button id="copyQuote">Copier ce passage</button>
+    <button id="copyFull">Copier le poème entier</button>
+    <button id="nativeShare">Partager via…</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DONNÉES (domaine public) ===================== */
+const POETS = {
+  baudelaire:{name:"Charles Baudelaire",years:"1821–1867",bg:["#2b1d2e","#120d16"]},
+  rimbaud:{name:"Arthur Rimbaud",years:"1854–1891",bg:["#1d2b25","#0d1512"]},
+  verlaine:{name:"Paul Verlaine",years:"1844–1896",bg:["#1f2433","#0e1119"]},
+  hugo:{name:"Victor Hugo",years:"1802–1885",bg:["#2e2519","#16110b"]},
+  apollinaire:{name:"Guillaume Apollinaire",years:"1880–1918",bg:["#192a30","#0b1417"]},
+  nerval:{name:"Gérard de Nerval",years:"1808–1855",bg:["#26182b","#110a14"]},
+  ronsard:{name:"Pierre de Ronsard",years:"1524–1585",bg:["#301c22","#170c10"]},
+  musset:{name:"Alfred de Musset",years:"1810–1857",bg:["#232327","#0f0f12"]},
+  dubellay:{name:"Joachim du Bellay",years:"1522–1560",bg:["#000","#000"]},
+  heredia:{name:"José-Maria de Heredia",years:"1842–1905",bg:["#000","#000"]},
+  desbordes:{name:"Marceline Desbordes-Valmore",years:"1786–1859"},
+  labe:{name:"Louise Labé",years:"1524–1566"},
+  mallarme:{name:"Stéphane Mallarmé",years:"1842–1898"},
+  sully:{name:"Sully Prudhomme",years:"1839–1907"},
+  orleans:{name:"Charles d'Orléans",years:"1394–1465"},
+  lafontaine:{name:"Jean de La Fontaine",years:"1621–1695"},
+  marot:{name:"Clément Marot",years:"1496–1544"},
+  arvers:{name:"Félix Arvers",years:"1806–1850"},
+  toulet:{name:"Paul-Jean Toulet",years:"1867–1920"},
+  lamartine:{name:"Alphonse de Lamartine",years:"1790–1869"},
+  scarron:{name:"Paul Scarron",years:"1610–1660"},
+};
+
+const POEMS = [
+{id:"albatros",fame:0.95,tags:"poésie,mer,exil",poet:"baudelaire",title:"L'Albatros",src:"Les Fleurs du mal, 1861",text:
+`Souvent, pour s'amuser, les hommes d'équipage
+Prennent des albatros, vastes oiseaux des mers,
+Qui suivent, indolents compagnons de voyage,
+Le navire glissant sur les gouffres amers.
+
+À peine les ont-ils déposés sur les planches,
+Que ces rois de l'azur, maladroits et honteux,
+Laissent piteusement leurs grandes ailes blanches
+Comme des avirons traîner à côté d'eux.
+
+Ce voyageur ailé, comme il est gauche et veule !
+Lui, naguère si beau, qu'il est comique et laid !
+L'un agace son bec avec un brûle-gueule,
+L'autre mime, en boitant, l'infirme qui volait !
+
+Le Poète est semblable au prince des nuées
+Qui hante la tempête et se rit de l'archer ;
+Exilé sur le sol au milieu des huées,
+Ses ailes de géant l'empêchent de marcher.`},
+{id:"correspondances",fame:0.9,tags:"nature,sens",poet:"baudelaire",title:"Correspondances",src:"Les Fleurs du mal, 1857",text:
+`La Nature est un temple où de vivants piliers
+Laissent parfois sortir de confuses paroles ;
+L'homme y passe à travers des forêts de symboles
+Qui l'observent avec des regards familiers.
+
+Comme de longs échos qui de loin se confondent
+Dans une ténébreuse et profonde unité,
+Vaste comme la nuit et comme la clarté,
+Les parfums, les couleurs et les sons se répondent.
+
+Il est des parfums frais comme des chairs d'enfants,
+Doux comme les hautbois, verts comme les prairies,
+— Et d'autres, corrompus, riches et triomphants,
+
+Ayant l'expansion des choses infinies,
+Comme l'ambre, le musc, le benjoin et l'encens,
+Qui chantent les transports de l'esprit et des sens.`},
+{id:"harmonie",fame:0.7,tags:"soir,mélancolie,souvenir",poet:"baudelaire",title:"Harmonie du soir",src:"Les Fleurs du mal, 1857",text:
+`Voici venir les temps où vibrant sur sa tige
+Chaque fleur s'évapore ainsi qu'un encensoir ;
+Les sons et les parfums tournent dans l'air du soir ;
+Valse mélancolique et langoureux vertige !
+
+Chaque fleur s'évapore ainsi qu'un encensoir ;
+Le violon frémit comme un cœur qu'on afflige ;
+Valse mélancolique et langoureux vertige !
+Le ciel est triste et beau comme un grand reposoir.
+
+Le violon frémit comme un cœur qu'on afflige,
+Un cœur tendre, qui hait le néant vaste et noir !
+Le ciel est triste et beau comme un grand reposoir ;
+Le soleil s'est noyé dans son sang qui se fige.
+
+Un cœur tendre, qui hait le néant vaste et noir,
+Du passé lumineux recueille tout vestige !
+Le soleil s'est noyé dans son sang qui se fige…
+Ton souvenir en moi luit comme un ostensoir !`},
+{id:"recueillement",fame:0.6,tags:"soir,douleur",poet:"baudelaire",title:"Recueillement",src:"Les Fleurs du mal, 1868",text:
+`Sois sage, ô ma Douleur, et tiens-toi plus tranquille.
+Tu réclamais le Soir ; il descend ; le voici :
+Une atmosphère obscure enveloppe la ville,
+Aux uns portant la paix, aux autres le souci.
+
+Pendant que des mortels la multitude vile,
+Sous le fouet du Plaisir, ce bourreau sans merci,
+Va cueillir des remords dans la fête servile,
+Ma Douleur, donne-moi la main ; viens par ici,
+
+Loin d'eux. Vois se pencher les défuntes Années,
+Sur les balcons du ciel, en robes surannées ;
+Surgir du fond des eaux le Regret souriant ;
+
+Le Soleil moribond s'endormir sous une arche,
+Et, comme un long linceul traînant à l'Orient,
+Entends, ma chère, entends la douce Nuit qui marche.`},
+{id:"dormeur",fame:0.97,tags:"guerre,nature,mort",poet:"rimbaud",title:"Le Dormeur du val",src:"Cahier de Douai, 1870",text:
+`C'est un trou de verdure où chante une rivière,
+Accrochant follement aux herbes des haillons
+D'argent ; où le soleil, de la montagne fière,
+Luit : c'est un petit val qui mousse de rayons.
+
+Un soldat jeune, bouche ouverte, tête nue,
+Et la nuque baignant dans le frais cresson bleu,
+Dort ; il est étendu dans l'herbe, sous la nue,
+Pâle dans son lit vert où la lumière pleut.
+
+Les pieds dans les glaïeuls, il dort. Souriant comme
+Sourirait un enfant malade, il fait un somme :
+Nature, berce-le chaudement : il a froid.
+
+Les parfums ne font pas frissonner sa narine ;
+Il dort dans le soleil, la main sur sa poitrine,
+Tranquille. Il a deux trous rouges au côté droit.`},
+{id:"boheme",fame:0.85,tags:"errance,jeunesse",poet:"rimbaud",title:"Ma Bohème",src:"Cahier de Douai, 1870",text:
+`Je m'en allais, les poings dans mes poches crevées ;
+Mon paletot aussi devenait idéal ;
+J'allais sous le ciel, Muse ! et j'étais ton féal ;
+Oh ! là ! là ! que d'amours splendides j'ai rêvées !
+
+Mon unique culotte avait un large trou.
+— Petit-Poucet rêveur, j'égrenais dans ma course
+Des rimes. Mon auberge était à la Grande-Ourse.
+— Mes étoiles au ciel avaient un doux frou-frou
+
+Et je les écoutais, assis au bord des routes,
+Ces bons soirs de septembre où je sentais des gouttes
+De rosée à mon front, comme un vin de vigueur ;
+
+Où, rimant au milieu des ombres fantastiques,
+Comme des lyres, je tirais les élastiques
+De mes souliers blessés, un pied près de mon cœur !`},
+{id:"sensation",fame:0.75,tags:"nature,errance,amour",poet:"rimbaud",title:"Sensation",src:"Cahier de Douai, 1870",text:
+`Par les soirs bleus d'été, j'irai dans les sentiers,
+Picoté par les blés, fouler l'herbe menue :
+Rêveur, j'en sentirai la fraîcheur à mes pieds.
+Je laisserai le vent baigner ma tête nue.
+
+Je ne parlerai pas, je ne penserai rien :
+Mais l'amour infini me montera dans l'âme,
+Et j'irai loin, bien loin, comme un bohémien,
+Par la Nature, — heureux comme avec une femme.`},
+{id:"chanson-automne",fame:0.9,tags:"automne,mélancolie,temps",poet:"verlaine",title:"Chanson d'automne",src:"Poèmes saturniens, 1866",text:
+`Les sanglots longs
+Des violons
+De l'automne
+Blessent mon cœur
+D'une langueur
+Monotone.
+
+Tout suffocant
+Et blême, quand
+Sonne l'heure,
+Je me souviens
+Des jours anciens
+Et je pleure ;
+
+Et je m'en vais
+Au vent mauvais
+Qui m'emporte
+Deçà, delà,
+Pareil à la
+Feuille morte.`},
+{id:"reve-familier",fame:0.75,tags:"amour,rêve",poet:"verlaine",title:"Mon rêve familier",src:"Poèmes saturniens, 1866",text:
+`Je fais souvent ce rêve étrange et pénétrant
+D'une femme inconnue, et que j'aime, et qui m'aime,
+Et qui n'est, chaque fois, ni tout à fait la même
+Ni tout à fait une autre, et m'aime et me comprend.
+
+Car elle me comprend, et mon cœur, transparent
+Pour elle seule, hélas ! cesse d'être un problème
+Pour elle seule, et les moiteurs de mon front blême,
+Elle seule les sait rafraîchir, en pleurant.
+
+Est-elle brune, blonde ou rousse ? — Je l'ignore.
+Son nom ? Je me souviens qu'il est doux et sonore
+Comme ceux des aimés que la Vie exila.
+
+Son regard est pareil au regard des statues,
+Et, pour sa voix, lointaine, et calme, et grave, elle a
+L'inflexion des voix chères qui se sont tues.`},
+{id:"il-pleure",fame:0.85,tags:"mélancolie,pluie",poet:"verlaine",title:"Il pleure dans mon cœur",src:"Romances sans paroles, 1874",text:
+`Il pleure dans mon cœur
+Comme il pleut sur la ville ;
+Quelle est cette langueur
+Qui pénètre mon cœur ?
+
+Ô bruit doux de la pluie
+Par terre et sur les toits !
+Pour un cœur qui s'ennuie,
+Ô le chant de la pluie !
+
+Il pleure sans raison
+Dans ce cœur qui s'écœure.
+Quoi ! nulle trahison ?…
+Ce deuil est sans raison.
+
+C'est bien la pire peine
+De ne savoir pourquoi
+Sans amour et sans haine
+Mon cœur a tant de peine !`},
+{id:"demain",fame:0.98,tags:"deuil,marche",poet:"hugo",title:"Demain, dès l'aube…",src:"Les Contemplations, 1856",text:
+`Demain, dès l'aube, à l'heure où blanchit la campagne,
+Je partirai. Vois-tu, je sais que tu m'attends.
+J'irai par la forêt, j'irai par la montagne.
+Je ne puis demeurer loin de toi plus longtemps.
+
+Je marcherai les yeux fixés sur mes pensées,
+Sans rien voir au dehors, sans entendre aucun bruit,
+Seul, inconnu, le dos courbé, les mains croisées,
+Triste, et le jour pour moi sera comme la nuit.
+
+Je ne regarderai ni l'or du soir qui tombe,
+Ni les voiles au loin descendant vers Harfleur,
+Et quand j'arriverai, je mettrai sur ta tombe
+Un bouquet de houx vert et de bruyère en fleur.`},
+{id:"semailles",fame:0.4,tags:"travail,soir,nature",poet:"hugo",title:"Saison des semailles. Le soir",src:"Les Chansons des rues et des bois, 1865",text:
+`C'est le moment crépusculaire.
+J'admire, assis sous un portail,
+Ce reste de jour dont s'éclaire
+La dernière heure du travail.
+
+Dans les terres, de nuit baignées,
+Je contemple, ému, les haillons
+D'un vieillard qui jette à poignées
+La moisson future aux sillons.
+
+Sa haute silhouette noire
+Domine les profonds labours.
+On sent à quel point il doit croire
+À la fuite utile des jours.
+
+Il marche dans la plaine immense,
+Va, vient, lance la graine au loin,
+Rouvre sa main, et recommence,
+Et je médite, obscur témoin,
+
+Pendant que, déployant ses voiles,
+L'ombre, où se mêle une rumeur,
+Semble élargir jusqu'aux étoiles
+Le geste auguste du semeur.`},
+{id:"mirabeau",fame:0.9,tags:"amour,temps",poet:"apollinaire",title:"Le Pont Mirabeau",src:"Alcools, 1913",text:
+`Sous le pont Mirabeau coule la Seine
+Et nos amours
+Faut-il qu'il m'en souvienne
+La joie venait toujours après la peine
+
+Vienne la nuit sonne l'heure
+Les jours s'en vont je demeure
+
+Les mains dans les mains restons face à face
+Tandis que sous
+Le pont de nos bras passe
+Des éternels regards l'onde si lasse
+
+Vienne la nuit sonne l'heure
+Les jours s'en vont je demeure
+
+L'amour s'en va comme cette eau courante
+L'amour s'en va
+Comme la vie est lente
+Et comme l'Espérance est violente
+
+Vienne la nuit sonne l'heure
+Les jours s'en vont je demeure
+
+Passent les jours et passent les semaines
+Ni temps passé
+Ni les amours reviennent
+Sous le pont Mirabeau coule la Seine
+
+Vienne la nuit sonne l'heure
+Les jours s'en vont je demeure`},
+{id:"automne-apo",fame:0.4,tags:"automne,amour",poet:"apollinaire",title:"Automne",src:"Alcools, 1913",text:
+`Dans le brouillard s'en vont un paysan cagneux
+Et son bœuf lentement dans le brouillard d'automne
+Qui cache les hameaux pauvres et vergogneux
+
+Et s'en allant là-bas le paysan chantonne
+Une chanson d'amour et d'infidélité
+Qui parle d'une bague et d'un cœur que l'on brise
+
+Oh ! l'automne l'automne a fait mourir l'été
+Dans le brouillard s'en vont deux silhouettes grises`},
+{id:"desdichado",fame:0.65,tags:"mélancolie,mythe",poet:"nerval",title:"El Desdichado",src:"Les Chimères, 1854",text:
+`Je suis le Ténébreux, – le Veuf, – l'Inconsolé,
+Le Prince d'Aquitaine à la Tour abolie :
+Ma seule Étoile est morte, – et mon luth constellé
+Porte le Soleil noir de la Mélancolie.
+
+Dans la nuit du Tombeau, Toi qui m'as consolé,
+Rends-moi le Pausilippe et la mer d'Italie,
+La fleur qui plaisait tant à mon cœur désolé,
+Et la treille où le Pampre à la Rose s'allie.
+
+Suis-je Amour ou Phébus ?… Lusignan ou Biron ?
+Mon front est rouge encor du baiser de la Reine ;
+J'ai rêvé dans la Grotte où nage la sirène…
+
+Et j'ai deux fois vainqueur traversé l'Achéron :
+Modulant tour à tour sur la lyre d'Orphée
+Les soupirs de la Sainte et les cris de la Fée.`},
+{id:"mignonne",fame:0.85,tags:"amour,temps,nature",poet:"ronsard",title:"Mignonne, allons voir si la rose",src:"Odes, 1550",text:
+`Mignonne, allons voir si la rose
+Qui ce matin avait déclose
+Sa robe de pourpre au soleil,
+A point perdu cette vesprée
+Les plis de sa robe pourprée,
+Et son teint au vôtre pareil.
+
+Las ! voyez comme en peu d'espace,
+Mignonne, elle a dessus la place
+Las ! las ! ses beautés laissé choir !
+Ô vraiment marâtre Nature,
+Puis qu'une telle fleur ne dure
+Que du matin jusques au soir !
+
+Donc, si vous me croyez, mignonne,
+Tandis que votre âge fleuronne
+En sa plus verte nouveauté,
+Cueillez, cueillez votre jeunesse :
+Comme à cette fleur la vieillesse
+Fera ternir votre beauté.`},
+{id:"tristesse",fame:0.45,tags:"mélancolie,vérité",poet:"musset",title:"Tristesse",src:"Poésies nouvelles, 1840",text:
+`J'ai perdu ma force et ma vie,
+Et mes amis et ma gaieté ;
+J'ai perdu jusqu'à la fierté
+Qui faisait croire à mon génie.
+
+Quand j'ai connu la Vérité,
+J'ai cru que c'était une amie ;
+Quand je l'ai comprise et sentie,
+J'en étais déjà dégoûté.
+
+Et pourtant elle est éternelle,
+Et ceux qui se sont passés d'elle
+Ici-bas ont tout ignoré.
+
+Dieu parle, il faut qu'on lui réponde.
+Le seul bien qui me reste au monde
+Est d'avoir quelquefois pleuré.`},
+{id:"ulysse",fame:.9,tags:"voyage,nostalgie",poet:"dubellay",title:"Heureux qui, comme Ulysse…",src:"Les Regrets, 1558",text:
+`Heureux qui, comme Ulysse, a fait un beau voyage,
+Ou comme cestuy-là qui conquit la toison,
+Et puis est retourné, plein d'usage et raison,
+Vivre entre ses parents le reste de son âge !
+
+Quand reverrai-je, hélas, de mon petit village
+Fumer la cheminée, et en quelle saison
+Reverrai-je le clos de ma pauvre maison,
+Qui m'est une province, et beaucoup davantage ?
+
+Plus me plaît le séjour qu'ont bâti mes aïeux,
+Que des palais Romains le front audacieux,
+Plus que le marbre dur me plaît l'ardoise fine :
+
+Plus mon Loire gaulois, que le Tibre latin,
+Plus mon petit Liré, que le mont Palatin,
+Et plus que l'air marin la douceur angevine.`},
+{id:"conquerants",fame:.6,tags:"voyage,mer,rêve",poet:"heredia",title:"Les Conquérants",src:"Les Trophées, 1893",text:
+`Comme un vol de gerfauts hors du charnier natal,
+Fatigués de porter leurs misères hautaines,
+De Palos de Moguer, routiers et capitaines
+Partaient, ivres d'un rêve héroïque et brutal.
+
+Ils allaient conquérir le fabuleux métal
+Que Cipango mûrit dans ses mines lointaines,
+Et les vents alizés inclinaient leurs antennes
+Aux bords mystérieux du monde occidental.
+
+Chaque soir, espérant des lendemains épiques,
+L'azur phosphorescent de la mer des Tropiques
+Enchantait leur sommeil d'un mirage doré ;
+
+Ou penchés à l'avant des blanches caravelles,
+Ils regardaient monter en un ciel ignoré
+Du fond de l'Océan des étoiles nouvelles.`},
+{id:"ciel-toit",fame:.7,tags:"mélancolie,jeunesse,regret",poet:"verlaine",title:"Le ciel est, par-dessus le toit…",src:"Sagesse, 1881",text:
+`Le ciel est, par-dessus le toit,
+Si bleu, si calme !
+Un arbre, par-dessus le toit,
+Berce sa palme.
+
+La cloche, dans le ciel qu'on voit,
+Doucement tinte.
+Un oiseau sur l'arbre qu'on voit
+Chante sa plainte.
+
+Mon Dieu, mon Dieu, la vie est là,
+Simple et tranquille.
+Cette paisible rumeur-là
+Vient de la ville.
+
+Qu'as-tu fait, ô toi que voilà
+Pleurant sans cesse,
+Dis, qu'as-tu fait, toi que voilà,
+De ta jeunesse ?`},
+{id:"roses-saadi",fame:.6,tags:"amour,souvenir",poet:"desbordes",title:"Les Roses de Saadi",src:"Poésies inédites, 1860",text:
+`J'ai voulu ce matin te rapporter des roses ;
+Mais j'en avais tant pris dans mes ceintures closes
+Que les nœuds trop serrés n'ont pu les contenir.
+
+Les nœuds ont éclaté. Les roses envolées
+Dans le vent, à la mer s'en sont toutes allées.
+Elles ont suivi l'eau pour ne plus revenir ;
+
+La vague en a paru rouge et comme enflammée.
+Ce soir, ma robe encore en est tout embaumée…
+Respires-en sur moi l'odorant souvenir.`},
+{id:"je-vis",fame:.7,tags:"amour,passion",poet:"labe",title:"Je vis, je meurs",src:"Sonnets, 1555",text:
+`Je vis, je meurs ; je me brûle et me noie ;
+J'ai chaud extrême en endurant froidure :
+La vie m'est et trop molle et trop dure.
+J'ai grands ennuis entremêlés de joie.
+
+Tout à un coup je ris et je larmoie,
+Et en plaisir maint grief tourment j'endure ;
+Mon bien s'en va, et à jamais il dure ;
+Tout en un coup je sèche et je verdoie.
+
+Ainsi Amour inconstamment me mène ;
+Et, quand je pense avoir plus de douleur,
+Sans y penser je me trouve hors de peine.
+
+Puis, quand je crois ma joie être certaine,
+Et être au haut de mon désiré heur,
+Il me remet en mon premier malheur.`},
+{id:"brise-marine",fame:.75,tags:"voyage,mer,ennui",poet:"mallarme",title:"Brise marine",src:"Poésies, 1865",text:
+`La chair est triste, hélas ! et j'ai lu tous les livres.
+Fuir ! là-bas fuir ! Je sens que des oiseaux sont ivres
+D'être parmi l'écume inconnue et les cieux !
+Rien, ni les vieux jardins reflétés par les yeux
+Ne retiendra ce cœur qui dans la mer se trempe
+Ô nuits ! ni la clarté déserte de ma lampe
+Sur le vide papier que la blancheur défend
+Et ni la jeune femme allaitant son enfant.
+Je partirai ! Steamer balançant ta mâture,
+Lève l'ancre pour une exotique nature !
+Un Ennui, désolé par les cruels espoirs,
+Croit encore à l'adieu suprême des mouchoirs !
+Et, peut-être, les mâts, invitant les orages,
+Sont-ils de ceux qu'un vent penche sur les naufrages
+Perdus, sans mâts, sans mâts, ni fertiles îlots…
+Mais, ô mon cœur, entends le chant des matelots !`},
+{id:"ici-bas",fame:.45,tags:"amour,temps,éternité",poet:"sully",title:"Ici-bas",src:"Stances et Poèmes, 1865",text:
+`Ici-bas tous les lilas meurent,
+Tous les chants des oiseaux sont courts ;
+Je rêve aux étés qui demeurent
+Toujours…
+
+Ici-bas les lèvres effleurent
+Sans rien laisser de leur velours ;
+Je rêve aux baisers qui demeurent
+Toujours…
+
+Ici-bas tous les hommes pleurent
+Leurs amitiés ou leurs amours ;
+Je rêve aux couples qui demeurent
+Toujours…`},
+{id:"temps-manteau",fame:.8,tags:"printemps,nature",poet:"orleans",title:"Le temps a laissé son manteau",src:"Rondeaux, XVe siècle",text:
+`Le temps a laissé son manteau
+De vent, de froidure et de pluie,
+Et s'est vêtu de broderie,
+De soleil luisant, clair et beau.
+
+Il n'y a bête, ni oiseau,
+Qu'en son jargon ne chante ou crie :
+Le temps a laissé son manteau !
+
+Rivière, fontaine et ruisseau
+Portent, en livrée jolie,
+Gouttes d'argent d'orfèvrerie,
+Chacun s'habille de nouveau :
+Le temps a laissé son manteau.`},
+{id:"corbeau-renard",fame:.99,tags:"fable,ruse",poet:"lafontaine",title:"Le Corbeau et le Renard",src:"Fables, 1668",text:
+`Maître Corbeau, sur un arbre perché,
+Tenait en son bec un fromage.
+Maître Renard, par l'odeur alléché,
+Lui tint à peu près ce langage :
+Et bonjour, Monsieur du Corbeau.
+Que vous êtes joli ! que vous me semblez beau !
+Sans mentir, si votre ramage
+Se rapporte à votre plumage,
+Vous êtes le Phénix des hôtes de ces bois.
+À ces mots le Corbeau ne se sent pas de joie ;
+Et pour montrer sa belle voix,
+Il ouvre un large bec, laisse tomber sa proie.
+Le Renard s'en saisit, et dit : Mon bon Monsieur,
+Apprenez que tout flatteur
+Vit aux dépens de celui qui l'écoute :
+Cette leçon vaut bien un fromage, sans doute.
+Le Corbeau, honteux et confus,
+Jura, mais un peu tard, qu'on ne l'y prendrait plus.`},
+{id:"plus-ne-suis",fame:.55,tags:"amour,temps,regret",poet:"marot",title:"Plus ne suis ce que j'ai été",src:"L'Adolescence clémentine, 1532",text:
+`Plus ne suis ce que j'ai été,
+Et plus ne saurais jamais l'être ;
+Mon beau printemps et mon été
+Ont fait le saut par la fenêtre.
+Amour, tu as été mon maître,
+Je t'ai servi sur tous les dieux.
+Ah ! si je pouvais deux fois naître,
+Comme je te servirais mieux !`},
+{id:"sonnet-arvers",fame:.6,tags:"amour,secret",poet:"arvers",title:"Sonnet",src:"Mes heures perdues, 1833",text:
+`Mon âme a son secret, ma vie a son mystère :
+Un amour éternel en un moment conçu.
+Le mal est sans espoir, aussi j'ai dû le taire,
+Et celle qui l'a fait n'en a jamais rien su.
+
+Hélas ! j'aurai passé près d'elle inaperçu,
+Toujours à ses côtés, et pourtant solitaire,
+Et j'aurai jusqu'au bout fait mon temps sur la terre,
+N'osant rien demander et n'ayant rien reçu.
+
+Pour elle, quoique Dieu l'ait faite douce et tendre,
+Elle ira son chemin, distraite, et sans entendre
+Ce murmure d'amour élevé sur ses pas ;
+
+À l'austère devoir pieusement fidèle,
+Elle dira, lisant ces vers tout remplis d'elle :
+« Quelle est donc cette femme ? » et ne comprendra pas.`},
+{id:"aliscams",fame:.35,tags:"amour,mort,douceur",poet:"toulet",title:"Dans Arle, où sont les Aliscams",src:"Les Contrerimes, 1921",text:
+`Dans Arle, où sont les Aliscams,
+Quand l'ombre est rouge, sous les roses,
+Et clair le temps,
+
+Prends garde à la douceur des choses.
+Lorsque tu sens battre sans cause
+Ton cœur trop lourd ;
+
+Et que se taisent les colombes :
+Parle tout bas, si c'est d'amour,
+Au bord des tombes.`},
+{id:"papillon",fame:.5,tags:"nature,désir",poet:"lamartine",title:"Le Papillon",src:"Nouvelles Méditations poétiques, 1823",text:
+`Naître avec le printemps, mourir avec les roses,
+Sur l'aile du zéphyr nager dans un ciel pur,
+Balancé sur le sein des fleurs à peine écloses,
+S'enivrer de parfums, de lumière et d'azur,
+Secouant, jeune encor, la poudre de ses ailes,
+S'envoler comme un souffle aux voûtes éternelles,
+Voilà du papillon le destin enchanté !
+Il ressemble au désir, qui jamais ne se pose,
+Et sans se satisfaire, effleurant toute chose,
+Retourne enfin au ciel chercher la volupté !`},
+{id:"epitaphe-scarron",fame:.35,tags:"mort,humour",poet:"scarron",title:"Épitaphe",src:"XVIIe siècle",text:
+`Celui qui ci maintenant dort
+Fit plus de pitié que d'envie,
+Et souffrit mille fois la mort
+Avant que de perdre la vie.
+Passant, ne fais ici de bruit,
+Garde bien que tu ne l'éveilles ;
+Car voici la première nuit
+Que le pauvre Scarron sommeille.`},
+];
+/* ===================== STOCKAGE (local, tolérant) ===================== */
+const KEY="poetreel.v1";
+let store={user:"",poets:[],likes:{},comments:{},prof:null,hist:[],known:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s) store=Object.assign(store,s);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ICON={
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20.5s-7.5-4.6-9.6-9.2C.9 7.9 3 4 6.8 4c2.2 0 3.9 1.2 5.2 3 1.3-1.8 3-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 15.9 12 20.5 12 20.5z"/></svg>',
+  comment:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.5 12a8.5 8.5 0 01-12.4 7.5L3.5 20.5l1.1-4.4A8.5 8.5 0 1120.5 12z"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.5 2.5L10.5 13.5M21.5 2.5l-7 19-4-8-8-4 19-7z"/></svg>',
+};
+let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1700)}
+function timeAgo(ts){const s=(Date.now()-ts)/1000;if(s<60)return"à l'instant";if(s<3600)return Math.floor(s/60)+" min";if(s<86400)return Math.floor(s/3600)+" h";return Math.floor(s/86400)+" j"}
+const byId=Object.fromEntries(POEMS.map(p=>[p.id,p]));
+const lastName=k=>POETS[k].name.split(" ").slice(-1)[0];
+
+/* ===================== ONBOARDING / RÉGLAGES ===================== */
+let picked=new Set(store.poets),step=1,settingsMode=false;
+function setStep(n){
+  step=n;$("#step1").classList.toggle("hidden",n!==1);$("#step2").classList.toggle("hidden",n!==2);
+  $("#barFill").style.width=(settingsMode?100:n*50)+"%";
+  $("#backBtn").classList.toggle("show",n===2||settingsMode);
+  updateCta();if(n===1)setTimeout(()=>$("#username").focus(),50);
+}
+function updateCta(){
+  const b=$("#startBtn");
+  if(step===1){b.disabled=$("#username").value.trim().length<2;b.textContent="Continuer";return}
+  b.disabled=picked.size===0;
+  b.textContent=picked.size===0?"Choisis au moins un poète":settingsMode?"Enregistrer":`C'est parti · ${picked.size}`;
+}
+function renderPoets(){
+  $("#poetGrid").innerHTML=Object.entries(POETS).map(([k,p])=>`<button class="pill ${picked.has(k)?"on":""}" data-k="${k}">${esc(p.name)}</button>`).join("");
+  $("#allBtn").textContent=picked.size===Object.keys(POETS).length?"Tout désélectionner":"Tout sélectionner";
+  updateCta();
+}
+$("#poetGrid").addEventListener("click",e=>{const b=e.target.closest(".pill");if(!b)return;const k=b.dataset.k;picked.has(k)?picked.delete(k):picked.add(k);renderPoets()});
+$("#allBtn").onclick=()=>{picked=picked.size===Object.keys(POETS).length?new Set():new Set(Object.keys(POETS));renderPoets()};
+$("#username").value=store.user||"";
+$("#username").addEventListener("input",()=>{$("#uerr").textContent="";updateCta()});
+$("#username").addEventListener("keydown",e=>{if(e.key==="Enter"&&!$("#startBtn").disabled)$("#startBtn").click()});
+$("#startBtn").onclick=()=>{
+  if(step===1){
+    const u=$("#username").value.trim().replace(/^@/,"");
+    if(!/^[\p{L}\p{N}_.-]{2,24}$/u.test(u)){$("#uerr").textContent="Lettres, chiffres, _ . - uniquement (2 à 24).";return}
+    store.user=u;save();setStep(2);return;
+  }
+  store.poets=[...picked];save();openFeed();
+};
+$("#backBtn").onclick=()=>{if(settingsMode&&store.poets.length){openFeed(true);return}setStep(1)};
+/* ===================== RECOMMANDATION =====================
+   Profil = affinités par poète et par thème + "cible de notoriété" (fameTarget).
+   Signal implicite d'une lecture = temps passé NORMALISÉ par la longueur
+   (temps attendu ≈ mots / 2,2 par seconde) + profondeur de défilement.
+   Un long poème lu en diagonale ne gagne donc rien ; un court poème relu, si. */
+const WPS=2.2;
+POEMS.forEach(p=>{p.words=p.text.split(/\s+/).length;p.expected=p.words/WPS+3;p.tagList=p.tags.split(",")});
+function initProfile(){
+  const prof={poet:{},tag:{},fameTarget:.75};
+  Object.keys(POETS).forEach(k=>prof.poet[k]=store.poets.includes(k)?.5:-.2);
+  store.prof=prof;
+}
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function learn(p,r){ // r ∈ ~[-1.2, 1.6]
+  const pr=store.prof,lr=.25;
+  pr.poet[p.poet]=clamp((pr.poet[p.poet]||0)+lr*r,-2,3);
+  p.tagList.forEach(t=>pr.tag[t]=clamp((pr.tag[t]||0)+lr*.6*r,-2,3));
+  // la cible de notoriété se rapproche des poèmes qui plaisent, s'éloigne des autres
+  pr.fameTarget=clamp(pr.fameTarget+.08*r*(p.fame-pr.fameTarget),.3,.98);
+  save();
+}
+function implicitSignal(dwell,depth,p){
+  const ratio=dwell/p.expected;
+  if(dwell<2.5) return -.6;                         // zappé
+  return .5*Math.min(ratio,1.2)+.5*depth-.5;        // ≈ -0.5 … +0.6
+}
+function scorePoem(p){
+  const pr=store.prof,seen=store.hist.filter(h=>h.id===p.id),recent=store.hist.slice(-10).some(h=>h.id===p.id);
+  const parts={
+    poet:1.0*(pr.poet[p.poet]||0),
+    tag:.6*avg(p.tagList.map(t=>pr.tag[t]||0)),
+    fame:.8*(1-Math.abs(p.fame-pr.fameTarget)),
+    known:store.known[p.id]===true?-.6:0,
+    seen:-.8*seen.length-(recent?4:0),
+  };
+  const total=Object.values(parts).reduce((a,b)=>a+b,0)+(Math.random()-.5)*.5; // bruit = exploration douce
+  return{p,total,parts};
+}
+function reasonFor(r,explore){
+  if(explore) return store.poets.includes(r.p.poet)?"Découverte":"Découverte · un poète que tu n'as pas choisi";
+  const pr=store.prof,P=POETS[r.p.poet];
+  if(r.parts.poet>.6) return "Parce que tu aimes "+P.name.split(" ").slice(-1)[0];
+  const bestTag=r.p.tagList.slice().sort((a,b)=>(pr.tag[b]||0)-(pr.tag[a]||0))[0];
+  if((pr.tag[bestTag]||0)>.3) return "Thème que tu apprécies : "+bestTag;
+  return r.p.fame>=.85?"Un incontournable":"Une pépite moins connue";
+}
+function pickNext(){
+  if(!store.prof) initProfile();
+  const exclude=new Set(queue.slice(-3).map(x=>x.id));
+  const explore=Math.random()<.15;
+  let pool=POEMS.filter(p=>!exclude.has(p.id)&&(explore||store.poets.includes(p.poet)));
+  if(!pool.length) pool=POEMS.filter(p=>!exclude.has(p.id));
+  const ranked=pool.map(scorePoem).sort((a,b)=>b.total-a.total);
+  const r=explore?ranked[Math.floor(Math.random()*Math.min(4,ranked.length))]:ranked[0];
+  return{...r.p,reason:reasonFor(r,explore)};
+}
+
+/* ===================== TAILLE UNIQUE QUI RESPECTE LES VERS =====================
+   Une seule taille pour tous les poèmes, calculée pour que le vers le plus long du
+   catalogue tienne sur une ligne de l'écran : la structure du poème n'est jamais cassée. */
+function verseSize(width){
+  const avail=Math.min(width,600)-44, c=document.createElement("canvas").getContext("2d");
+  c.font="400 100px Inter, system-ui, sans-serif";
+  // 97 % des vers du catalogue tiennent sur une ligne ; les rares très longs passent
+  // à la ligne avec un retrait, pour qu'on voie que c'est le même vers. Plancher lisible : 15 px.
+  const w=[];POEMS.forEach(p=>p.text.split("\n").forEach(l=>l.trim()&&w.push(c.measureText(l).width)));
+  w.sort((a,b)=>a-b);const ref=w[Math.floor(w.length*.97)];
+  return Math.max(15,Math.min(18,Math.floor(avail/(ref/100)*0.98*10)/10));
+}
+function fitVerse(){document.documentElement.style.setProperty("--verse",verseSize(innerWidth)+"px")}
+
+/* ===================== CATALOGUE : UN ÉCRAN = UN POÈME =====================
+   Règle éditoriale simple et indépendante de l'écran : au plus 20 lignes,
+   blancs entre strophes compris (un sonnet = 17). Les poèmes plus longs restent hors du fil. */
+const MAX_LINES=20;
+const poemLines=p=>{const st=stanzas(p);return st.reduce((n,s)=>n+s.length,0)+st.length-1};
+let catalogBuilt=false;
+function buildCatalog(){
+  if(catalogBuilt)return;catalogBuilt=true;
+  const out=[];
+  for(let i=POEMS.length-1;i>=0;i--)if(poemLines(POEMS[i])>MAX_LINES){out.push(POEMS[i].title);POEMS.splice(i,1)}
+  if(out.length)console.info("[Poetreel] hors catalogue :",out.join(", "));
+}
+/* Taille unique pour l'appareil : la plus grande (≤ 18 px) qui fait tenir le poème le
+   plus haut du catalogue sur l'écran, vers trop longs compris. */
+function fitToScreen(){
+  buildCatalog();
+  const root=document.documentElement,m=$("#measure");
+  m.innerHTML=`<div class="reel" style="width:${innerWidth}px;height:${innerHeight}px"><div class="track"><div class="page"><div class="page-inner" style="justify-content:flex-start"></div></div></div></div>`;
+  const inner=m.querySelector(".page-inner"),avail=inner.clientHeight;
+  const tallest=POEMS;
+  let px=verseSize(innerWidth);
+  const fitsAll=()=>tallest.every(p=>{return (inner.innerHTML=titleHTML(p)+stanzas(p).map(stanzaHTML).join(""),inner.scrollHeight<=avail+1)});
+  root.style.setProperty("--verse",px+"px");
+  while(px>13&&!fitsAll()){px-=.5;root.style.setProperty("--verse",px+"px")}
+  m.innerHTML="";
+}
+/* ===================== MISE EN PAGE : découper un poème en écrans ===================== */
+function stanzas(p){return p.text.split(/\n\s*\n/).map(s=>s.split("\n"))}
+const titleHTML=p=>`<h2 class="ptitle">${esc(p.title)}</h2>`;
+const nbsp=l=>l.replace(/ ([;:!?»])/g,"\u202F$1").replace(/« /g,"«\u202F");
+const stanzaHTML=lines=>`<div class="stanza">${lines.map(l=>`<span class="v">${esc(nbsp(l))}</span>`).join("")}</div>`;
+let layoutKey="";
+function paginate(p){
+  if(!paginate.done){fitToScreen();paginate.done=1}
+  // Mesure réelle dans une page fantôme : la taille du texte ne change jamais, c'est le découpage qui s'adapte.
+  const m=$("#measure");
+  m.innerHTML=`<div class="reel" style="width:${innerWidth}px"><div class="track"><div class="page"><div class="page-inner" style="justify-content:flex-start"></div></div></div></div>`;
+  const inner=m.querySelector(".page-inner"),avail=inner.clientHeight;
+  const pages=[];let cur=[];
+  const fits=blocks=>{inner.innerHTML=(pages.length?"":titleHTML(p))+blocks.map(stanzaHTML).join("");return inner.scrollHeight<=avail+1};
+  for(const st of stanzas(p)){
+    if(fits([...cur,st])){cur.push(st);continue}
+    if(cur.length){pages.push(cur);cur=[]}
+    if(fits([st])){cur=[st];continue}
+    let part=[];                                  // strophe plus haute que l'écran : on coupe entre deux vers
+    for(const line of st){ if(fits([[...part,line]]))part.push(line); else {if(part.length)pages.push([part]);part=[line]} }
+    cur=[part];
+  }
+  if(cur.length)pages.push(cur);
+  m.innerHTML="";
+  return pages;
+}
+
+/* ===================== FEED ===================== */
+const feed=$("#feed");
+let queue=[],rendered=0,current=null;
+
+function reelEl(p,idx){
+  const pages=paginate(p),liked=!!store.likes[p.id],nc=(store.comments[p.id]||[]).length;
+  const el=document.createElement("section");
+  el.className="reel";el.dataset.id=p.id;el.dataset.idx=idx;el._pages=pages;
+  el.innerHTML=`    <div class="track">${pages.map((pg,i)=>`<div class="page"><div class="page-inner">${i===0?titleHTML(p):""}${pg.map(stanzaHTML).join("")}</div></div>`).join("")}</div>
+    ${pages.length>1?`<div class="dots">${pages.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>`:""}
+    ${pages.length>1&&idx<2?`<div class="hint">la suite →</div>`:""}
+    <div class="foot"><div class="foot-in">
+      <div class="poet-name">${esc(POETS[p.poet].name)}</div>
+      <button class="act like ${liked?"liked":""}" aria-label="J'aime">${ICON.heart}</button>
+      <button class="act cmt" aria-label="Commenter">${ICON.comment}<span class="n">${nc||""}</span></button>
+      <button class="act shr" aria-label="Partager">${ICON.share}</button>
+    </div></div>`;
+  const track=el.querySelector(".track"),dots=[...el.querySelectorAll(".dots i")],hint=el.querySelector(".hint");
+  el._page=0;
+  track.addEventListener("scroll",()=>{
+    const i=Math.round(track.scrollLeft/track.clientWidth);el._page=i;
+    dots.forEach((d,j)=>d.classList.toggle("on",j===i));
+    if(hint&&i>0)hint.classList.add("gone");
+    if(view&&view.el===el)view.maxPage=Math.max(view.maxPage,i);
+  },{passive:true});
+  el.querySelector(".like").onclick=()=>toggleLike(el);
+  el.querySelector(".cmt").onclick=()=>openComments(p.id);
+  el.querySelector(".shr").onclick=()=>openShare(el);
+  let last=0;
+  track.addEventListener("click",e=>{const n=Date.now();if(n-last<320){if(!store.likes[p.id])toggleLike(el);burst(el,e)}last=n});
+  return el;
+}
+function burst(el,e){
+  const b=document.createElement("div");b.className="burst";b.innerHTML=ICON.heart.replace('fill="none"','fill="currentColor"');
+  const r=el.getBoundingClientRect();b.style.left=(e.clientX-r.left)+"px";b.style.top=(e.clientY-r.top)+"px";
+  el.appendChild(b);setTimeout(()=>b.remove(),800);
+}
+function haptic(){try{const H=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics;if(H)H.impact({style:"LIGHT"});else if(navigator.vibrate)navigator.vibrate(8)}catch(e){}}
+function toggleLike(el){haptic();
+  const id=el.dataset.id;store.likes[id]=!store.likes[id];if(!store.likes[id])delete store.likes[id];
+  if(store.prof)learn(byId[id],store.likes[id]?1:-1);save();
+  document.querySelectorAll(`.reel[data-id="${id}"] .like`).forEach(b=>b.classList.toggle("liked",!!store.likes[id]));
+}
+function renderMore(n=1){for(let k=0;k<n;k++){const p=pickNext();queue.push(p);feed.appendChild(reelEl(p,rendered));rendered++}}
+
+/* temps de lecture actif + nombre d'écrans vus */
+let view=null;
+function startView(el){endView();view={el,id:el.dataset.id,t0:Date.now(),acc:0,maxPage:el._page||0}}
+function endView(){
+  if(!view)return;
+  const dwell=(view.acc+(document.hidden?0:Date.now()-view.t0))/1000,p=byId[view.id],n=view.el._pages.length;
+  const depth=n<=1?1:view.maxPage/(n-1);
+  const sig=implicitSignal(dwell,depth,p);
+  store.hist.push({id:p.id,dwell:Math.round(dwell),depth:+depth.toFixed(2),sig:+sig.toFixed(2),t:Date.now()});
+  store.hist=store.hist.slice(-300);learn(p,sig);view=null;
+}
+document.addEventListener("visibilitychange",()=>{if(!view)return;if(document.hidden)view.acc+=Date.now()-view.t0;else view.t0=Date.now()});
+addEventListener("pagehide",endView);
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting&&e.target!==current){current=e.target;startView(current);if(+current.dataset.idx>=rendered-2)renderMore(1)}
+}),{root:feed,threshold:.6});
+new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>n.nodeType===1&&io.observe(n)))).observe(feed,{childList:true});
+
+const FEED_UI=["#feed","#meBtn","#upBtn","#downBtn","#prevBtn","#nextBtn"];
+function openFeed(keep){
+  if(keep===true){$("#onboard").classList.add("hidden");FEED_UI.forEach(s=>$(s).classList.remove("hidden"));if(current)startView(current);return}
+  $("#onboard").classList.add("hidden");FEED_UI.forEach(s=>$(s).classList.remove("hidden"));
+  $("#meBtn").textContent=store.user[0].toUpperCase();
+  endView();current=null;
+  if(!store.prof)initProfile();else store.poets.forEach(k=>{if((store.prof.poet[k]||0)<.3)store.prof.poet[k]=.5});
+  save();feed.innerHTML="";queue=[];rendered=0;renderMore(3);feed.scrollTop=0;
+}
+$("#meBtn").onclick=()=>{
+  endView();FEED_UI.forEach(s=>$(s).classList.add("hidden"));
+  settingsMode=true;$("#s2title").textContent="Tes poètes";$("#s2sub").textContent="Modifie-les quand tu veux. Ton fil les met en avant, avec un peu de découverte.";
+  picked=new Set(store.poets);renderPoets();setStep(2);$("#onboard").classList.remove("hidden");
+};
+/* re-découpe si l'écran change de taille (rotation…) */
+let rT;addEventListener("resize",()=>{clearTimeout(rT);rT=setTimeout(()=>{
+  const k=innerWidth+"x"+innerHeight;if(k===layoutKey||feed.classList.contains("hidden"))return;layoutKey=k;fitToScreen();
+  const idx=current?+current.dataset.idx:0;
+  [...feed.children].forEach(el=>{const n=reelEl(byId[el.dataset.id],+el.dataset.idx);if(el===current){endView();current=null}feed.replaceChild(n,el)});
+  feed.scrollTop=idx*feed.clientHeight;
+},200)});
+layoutKey=innerWidth+"x"+innerHeight;
+
+const goV=d=>feed.scrollBy({top:d*feed.clientHeight,behavior:"smooth"});
+const goH=d=>{const t=current&&current.querySelector(".track");if(t)t.scrollBy({left:d*t.clientWidth,behavior:"smooth"})};
+$("#upBtn").onclick=()=>goV(-1);$("#downBtn").onclick=()=>goV(1);$("#prevBtn").onclick=()=>goH(-1);$("#nextBtn").onclick=()=>goH(1);
+document.addEventListener("keydown",e=>{
+  if(feed.classList.contains("hidden")||document.activeElement.tagName==="INPUT"||document.querySelector(".sheet.open"))return;
+  const k={ArrowDown:()=>goV(1),ArrowUp:()=>goV(-1),ArrowRight:()=>goH(1),ArrowLeft:()=>goH(-1)}[e.key];
+  if(k){e.preventDefault();k()}
+});
+
+/* ===================== COMMENTAIRES & PARTAGE ===================== */
+let sheetPoem=null;
+function openSheet(id){$("#scrim").classList.add("open");$(id).classList.add("open")}
+function closeSheets(){document.querySelectorAll(".sheet").forEach(s=>s.classList.remove("open"));$("#scrim").classList.remove("open");$("#cInput").blur()}
+$("#scrim").onclick=closeSheets;document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeSheets);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheets()});
+
+function openComments(id){sheetPoem=id;renderComments();openSheet("#commentSheet")}
+function renderComments(){
+  const p=byId[sheetPoem],list=store.comments[sheetPoem]||[];
+  $("#cCount").textContent=list.length?`${list.length} commentaire${list.length>1?"s":""}`:"Commentaires";
+  $("#cTitle").textContent=`${p.title} — ${POETS[p.poet].name}`;
+  $("#clist").innerHTML=list.length?list.slice().reverse().map(c=>`<div class="c"><b>@${esc(c.u)}</b><time>${timeAgo(c.t)}</time><p>${esc(c.x)}</p>${c.u===store.user?`<button class="del" data-t="${c.t}">Supprimer</button>`:""}</div>`).join("")
+    :`<div class="empty">Aucun commentaire.<br>Quel vers t'a arrêté·e ?</div>`;
+  document.querySelectorAll(`.reel[data-id="${sheetPoem}"] .cmt .n`).forEach(n=>n.textContent=list.length||"");
+}
+$("#clist").addEventListener("click",e=>{const d=e.target.closest(".del");if(!d)return;store.comments[sheetPoem]=(store.comments[sheetPoem]||[]).filter(c=>c.t!=d.dataset.t);save();renderComments()});
+$("#cInput").addEventListener("input",e=>$("#cSend").disabled=!e.target.value.trim());
+$("#cForm").addEventListener("submit",e=>{
+  e.preventDefault();const x=$("#cInput").value.trim();if(!x)return;
+  (store.comments[sheetPoem]=store.comments[sheetPoem]||[]).push({u:store.user,x,t:Date.now()});
+  if(store.prof)learn(byId[sheetPoem],1.2);save();
+  $("#cInput").value="";$("#cSend").disabled=true;renderComments();$("#clist").scrollTop=0;
+});
+
+let shareCtx=null;
+function openShare(el){
+  const p=byId[el.dataset.id],page=el._pages[el._page||0],passage=page.map(s=>s.join("\n")).join("\n\n");
+  shareCtx={p,passage};
+  $("#qCard").innerHTML=`${esc(passage).replace(/\n/g,"<br>")}<small>${esc(p.title)} — ${esc(POETS[p.poet].name)}</small>`;
+  openSheet("#shareSheet");
+}
+async function copy(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg);if(store.prof)learn(shareCtx.p,1.5)}catch(e){toast("Copie impossible ici")}}
+$("#copyQuote").onclick=()=>{const{p,passage}=shareCtx;copy(`${passage}\n\n— ${POETS[p.poet].name}, « ${p.title} »\nvia Poetreel`,"Passage copié")};
+$("#copyFull").onclick=()=>{const{p}=shareCtx;copy(`${p.title}\n${POETS[p.poet].name}\n\n${p.text}\n\nvia Poetreel`,"Poème copié")};
+$("#nativeShare").onclick=async()=>{
+  const{p,passage}=shareCtx,text=`${passage}\n\n— ${POETS[p.poet].name}, « ${p.title} »`;
+  try{if(!navigator.share)throw 0;await navigator.share({title:p.title,text})}catch(e){if(e&&e.name==="AbortError")return;copy(text,"Partage indisponible ici : passage copié")}
+};
+
+renderPoets();setStep(1);
+if(store.user&&store.poets.length)(document.fonts?document.fonts.ready:Promise.resolve()).then(openFeed);
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
