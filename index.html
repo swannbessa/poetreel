@@ -180,7 +180,8 @@
     border-top:1px solid var(--line);border-radius:20px 20px 0 0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .26s cubic-bezier(.2,.8,.2,1)}
   .sheet.open{transform:none}
   .sheet header{padding:12px 18px;border-bottom:1px solid var(--line);text-align:center;position:relative}
-  .grab{width:36px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+  .grab{width:36px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+  .sheet header{touch-action:none}
   .sheet header b{font-size:15px;font-weight:600}
   .sheet header small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
   .close{position:absolute;right:10px;top:16px;width:32px;height:32px;font-size:22px;color:var(--muted)}
@@ -1304,6 +1305,32 @@ function closeSheets(){document.querySelectorAll(".sheet").forEach(s=>s.classLis
 $("#scrim").onclick=closeSheets;document.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeSheets);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheets()});
 
+
+/* Glisser vers le bas pour fermer une feuille (comme sur Instagram) */
+document.querySelectorAll(".sheet").forEach(sh=>{
+  let y0=null,dy=0,t0=0,list=null;
+  sh.addEventListener("touchstart",e=>{
+    list=e.target.closest(".clist,.info-body");
+    if(list&&list.scrollTop>0){y0=null;return}       // on laisse défiler la liste
+    if(e.target.closest("input,textarea"))return;
+    y0=e.touches[0].clientY;dy=0;t0=Date.now();
+  },{passive:true});
+  sh.addEventListener("touchmove",e=>{
+    if(y0===null)return;
+    dy=e.touches[0].clientY-y0;
+    if(dy<=0){sh.style.transform="";return}           // vers le haut : défilement normal
+    if(e.cancelable)e.preventDefault();
+    sh.style.transition="none";sh.style.transform=`translateY(${dy}px)`;
+    $("#scrim").style.opacity=String(Math.max(0,1-dy/400));
+  },{passive:false});
+  sh.addEventListener("touchend",()=>{
+    if(y0===null)return;
+    const fast=dy>40&&dy/(Date.now()-t0)>.5;
+    sh.style.transition="";$("#scrim").style.opacity="";
+    if(dy>110||fast){sh.style.transform="";closeSheets()}else sh.style.transform="";
+    y0=null;dy=0;
+  });
+});
 function openComments(id){sheetPoem=id;renderComments();openSheet("#commentSheet")}
 function renderComments(){
   const p=byId[sheetPoem],list=store.comments[sheetPoem]||[];
